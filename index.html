@@ -420,7 +420,7 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 // ── SUPABASE ──────────────────────────────────────────────────────────────────
 // Replace these with your values from supabase.com → Project Settings → API
 var SUPABASE_URL  = 'https://zzrqmawsobgulqwvonbq.supabase.co';
-var SUPABASE_ANON = 'sb_publishable_W5EZRM9SfhtUzYwnUDK5bw_4T-H3s9a';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6cnFtYXdzb2JndWxxd3ZvbmJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTg2NzUsImV4cCI6MjA5MDQ5NDY3NX0.w_R8UwGfbstFbPYmQ5E1TltAr7pyGLDspswwiJyYWME';
 var EDGE_FN_URL   = SUPABASE_URL+'/functions/v1/ananda-ai';
 var _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 var _sessionId=localStorage.getItem('ananda_sid')||(function(){var id='sess_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('ananda_sid',id);return id;})();
