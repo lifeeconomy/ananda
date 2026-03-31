@@ -126,8 +126,9 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .hf-art{position:absolute;inset:0;z-index:0}
 
 /* ══ HERB STRIP TILES — CSS art, always stunning ═ */
-.herb-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
-@media(max-width:1100px){.herb-strip,.cards-grid{grid-template-columns:repeat(2,1fr)}}
+.herb-strip{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
+@media(min-width:600px){.herb-strip,.cards-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.herb-strip,.cards-grid{grid-template-columns:repeat(4,1fr)}}
 
 .hs-tile{border-radius:8px;overflow:hidden;height:215px;position:relative;cursor:pointer;box-shadow:0 6px 24px rgba(36,30,19,.2);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s;opacity:0;transform:translateY(16px);animation:cIn .5s cubic-bezier(.16,1,.3,1) forwards}
 .hs-tile:hover{transform:translateY(-6px);box-shadow:0 18px 48px rgba(36,30,19,.3)}
@@ -155,7 +156,7 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .hs-badge-val{font-size:12px;font-weight:500;color:var(--gold-light)}
 
 /* ══ FULL EXPANDED CARDS ════════════════════════ */
-.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.cards-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;align-items:start}
 .hf{background:var(--white);border-radius:8px;overflow:hidden;box-shadow:0 2px 14px rgba(36,30,19,.08),0 0 0 1px rgba(36,30,19,.05);display:flex;flex-direction:column;opacity:0;transform:translateY(12px);animation:cIn .4s cubic-bezier(.16,1,.3,1) forwards;transition:transform .25s,box-shadow .25s}
 .hf:hover{transform:translateY(-5px);box-shadow:0 14px 40px rgba(36,30,19,.14)}
 .hf:nth-child(1){animation-delay:.05s}.hf:nth-child(2){animation-delay:.11s}.hf:nth-child(3){animation-delay:.17s}.hf:nth-child(4){animation-delay:.23s}
@@ -200,8 +201,9 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .kit-bar-sub{font-size:11px;color:var(--parchment-dim);opacity:.55;line-height:1.5;max-width:540px}
 .kit-buy-all{background:var(--amazon);border:none;border-radius:4px;color:#232F3E;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;padding:12px 24px;white-space:nowrap;transition:background .2s;flex-shrink:0}
 .kit-buy-all:hover{background:#e68a00}
-.kit-herbs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-@media(max-width:900px){.kit-herbs{grid-template-columns:repeat(2,1fr)}}
+.kit-herbs{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:600px){.kit-herbs{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.kit-herbs{grid-template-columns:repeat(4,1fr)}}
 .kit-herb{background:rgba(255,255,255,.06);border:1px solid rgba(201,150,42,.12);border-radius:5px;padding:11px 13px}
 .kit-herb-name{font-size:11.5px;font-weight:500;color:var(--parchment);margin-bottom:4px}
 .kit-herb-prod{font-size:10px;color:rgba(201,150,42,.75);margin-bottom:5px;line-height:1.4}
@@ -241,8 +243,9 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .sec-lbl::after{content:'';flex:1;height:1px;background:var(--linen)}
 
 /* Schedule — muted, forest-aligned day cards */
-.sched-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
-@media(max-width:900px){.sched-grid{grid-template-columns:repeat(2,1fr)}}
+.sched-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:28px}
+@media(min-width:600px){.sched-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.sched-grid{grid-template-columns:repeat(4,1fr)}}
 .sc-card{border-radius:8px;overflow:hidden;box-shadow:0 4px 18px rgba(36,30,19,.2);animation:cIn .4s cubic-bezier(.16,1,.3,1) both}
 .sc-card:nth-child(2){animation-delay:.07s}.sc-card:nth-child(3){animation-delay:.14s}.sc-card:nth-child(4){animation-delay:.21s}
 .sc-morning{background:linear-gradient(155deg,#1C1008 0%,#2E1A0A 40%,#3C2410 80%,#4A2E14 100%)}
@@ -261,8 +264,10 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .sc-rest{font-size:11px;color:var(--parchment-dim);opacity:.35;font-style:italic;padding:13px 17px 15px}
 
 /* ══ TIMELINE — JAZZED UP, GRANDMA-CLEAR ════════ */
-.tl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;position:relative}
-.tl-grid::before{content:'';position:absolute;top:50px;left:calc(100%/6);right:calc(100%/6);height:2px;background:linear-gradient(90deg,rgba(201,150,42,.25) 0%,rgba(201,150,42,.65) 50%,var(--gold) 100%);border-radius:1px;z-index:0}
+.tl-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:28px;position:relative}
+@media(min-width:700px){.tl-grid{grid-template-columns:repeat(3,1fr)}}
+.tl-grid::before{content:'';position:absolute;top:50px;left:calc(100%/6);right:calc(100%/6);height:2px;background:linear-gradient(90deg,rgba(201,150,42,.25) 0%,rgba(201,150,42,.65) 50%,var(--gold) 100%);border-radius:1px;z-index:0;display:none}
+@media(min-width:700px){.tl-grid::before{display:block}}
 .tl-card{border-radius:8px;overflow:hidden;box-shadow:0 4px 16px rgba(36,30,19,.12);position:relative;z-index:1;animation:cIn .45s cubic-bezier(.16,1,.3,1) both}
 .tl-card:nth-child(2){animation-delay:.09s}.tl-card:nth-child(3){animation-delay:.18s}
 .tl-card-1{background:linear-gradient(160deg,#1C1008 0%,#2A1808 45%,#381E0A 100%)}
@@ -315,6 +320,41 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .m-sb{width:100%;background:var(--forest);border:none;border-radius:3px;color:var(--parchment);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.15em;padding:12px;text-transform:uppercase;transition:background .2s;margin-top:2px}.m-sb:hover{background:var(--forest-light)}
 .m-leg{font-size:8.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;opacity:.55}
 .i-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+
+/* ══ PLUS ICON PRODUCT PANEL ════════════════════ */
+.hf-prod-row{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--linen);padding-top:10px;margin-top:6px}
+.hf-prod-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);font-weight:600}
+.hf-prod-plus{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(201,150,42,.35);background:transparent;color:var(--gold);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;line-height:1}
+.hf-prod-plus:hover{background:rgba(201,150,42,.1);border-color:var(--gold)}
+.hf-prod-panel{display:none;margin-top:10px;border-radius:6px;overflow:hidden;border:1px solid rgba(13,26,17,.08)}
+.hf-prod-panel.open{display:block}
+.hf-pp-item{padding:9px 11px;border-bottom:1px solid rgba(13,26,17,.06);display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(13,26,17,.02)}
+.hf-pp-item:last-child{border-bottom:none}
+.hf-pp-info{display:flex;flex-direction:column;gap:1px;flex:1}
+.hf-pp-brand{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.hf-pp-name{font-size:10.5px;font-weight:500;color:var(--ink);line-height:1.3}
+.hf-pp-buy{display:inline-flex;align-items:center;gap:4px;background:var(--amazon);color:#232F3E;text-decoration:none;padding:5px 10px;border-radius:3px;font-size:9px;font-weight:700;white-space:nowrap;transition:background .15s;flex-shrink:0}
+.hf-pp-buy:hover{background:#e68a00}
+
+/* Schedule herb plus button */
+.sc-buy-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:1px solid rgba(201,150,42,.3);background:transparent;color:rgba(201,150,42,.8);font-size:14px;cursor:pointer;transition:all .2s;margin-top:5px;line-height:1}
+.sc-buy-btn:hover{background:rgba(201,150,42,.12);border-color:var(--gold);color:var(--gold)}
+.sc-prod-panel{display:none;margin-top:8px;background:rgba(0,0,0,.2);border-radius:5px;overflow:hidden}
+.sc-prod-panel.open{display:block}
+.sc-pp-item{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sc-pp-item:last-child{border-bottom:none}
+.sc-pp-name{font-size:10px;color:var(--parchment);opacity:.8;flex:1;line-height:1.3}
+.sc-pp-buy{display:inline-flex;align-items:center;gap:3px;background:var(--amazon);color:#232F3E;text-decoration:none;padding:4px 9px;border-radius:3px;font-size:8.5px;font-weight:700;white-space:nowrap;flex-shrink:0;transition:background .15s}
+.sc-pp-buy:hover{background:#e68a00}
+
+/* Mobile home padding */
+@media(max-width:600px){
+  body.home-mode .lp{padding:0 24px;min-height:100vh}
+  .rp{padding:16px 16px 64px}
+  .proto-cta{flex-direction:column;align-items:flex-start}
+  .kit-bar-top{flex-direction:column}
+  .kit-buy-all{width:100%}
+}
 </style>
 </head>
 <body class="home-mode">
@@ -770,7 +810,7 @@ async function seekRemedy(){
 function stripTiles(){
   return _herbs.map(function(r,i){
     var tl=r.timeline_weeks||'';
-    return '<div class="hs-tile">'
+    return '<div class="hs-tile" onclick="if(!_expanded)toggleExpand()">'
       +herbArtDiv(r.herbKey||r.name,'hs-art')
       +'<div class="hs-overlay"></div>'
       +(tl?'<div class="hs-badge"><div class="hs-badge-top">Feel results in</div><div class="hs-badge-val">~'+tl+'</div></div>':'')
@@ -779,6 +819,7 @@ function stripTiles(){
       +'<div class="hs-roman">'+(r.romanSanskrit||'')+'</div>'
       +'<div class="hs-eng">'+r.name+'</div>'
       +'<div class="hs-tag">'+(r.tagline||'')+'</div>'
+      +'<div style="font-size:9px;color:rgba(201,150,42,.6);margin-top:6px;letter-spacing:.08em">Tap to see full details →</div>'
       +'</div></div>';
   }).join('');
 }
@@ -791,11 +832,14 @@ function fullCards(){
     var tl=r.timeline_weeks||'';
     var prods='';
     if(r.products&&r.products.length){
-      prods='<div class="hf-picks-lbl">✦ ĀNANDA Top 3 Picks</div>';
+      var panelId='pp-'+i;
+      prods='<div class="hf-prod-row"><div class="hf-prod-lbl">✦ ĀNANDA Top 3 Picks</div><button class="hf-prod-plus" onclick="toggleProdPanel(\''+panelId+'\')" title="Show product options">+</button></div>';
+      prods+='<div class="hf-prod-panel" id="'+panelId+'">';
       prods+=r.products.slice(0,3).map(function(p){
         var amzUrl='https://www.amazon.com/s?k='+encodeURIComponent(p.search||p.product+' '+p.brand)+'&tag=lifeeconomy-20';
-        return '<div class="hf-pick"><div class="hf-pick-brand">'+p.brand+'</div><div class="hf-pick-name">'+p.product+'</div><div class="hf-pick-why">'+p.why+'</div><a class="hf-pick-buy" href="'+amzUrl+'" target="_blank" rel="noopener" data-herb="'+r.name+'" data-prod="'+p.product+'" data-brand="'+p.brand+'" onclick="var el=this;trackClick(el.dataset.herb,el.dataset.prod,el.dataset.brand,el.href);">🛒 Buy on Amazon →</a></div>';
+        return '<div class="hf-pp-item"><div class="hf-pp-info"><div class="hf-pp-brand">'+p.brand+'</div><div class="hf-pp-name">'+p.product+'</div></div><a class="hf-pp-buy" href="'+amzUrl+'" target="_blank" rel="noopener" onclick="trackClick(\''+r.name+'\',\''+p.product+'\',\''+p.brand+'\',\''+amzUrl+'\')">🛒 Buy</a></div>';
       }).join('');
+      prods+='</div>';
     }
     return '<div class="hf">'
       +'<div class="hf-photo" style="position:relative;overflow:hidden">'
@@ -856,16 +900,31 @@ function kitSection(){
     +'</div>';
 }
 
+function toggleProdPanel(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('open');
+  // Toggle + to × on the button
+  var btn=el.previousElementSibling;
+  if(btn&&btn.classList.contains('hf-prod-plus')){btn.textContent=el.classList.contains('open')?'×':'+';}
+  if(btn&&btn.classList.contains('sc-buy-btn')){btn.textContent=el.classList.contains('open')?'×':'+';}
+}
+
+function isMobile(){return window.innerWidth<600;}
+
 function toggleExpand(){
   _expanded=!_expanded;
   var s=document.getElementById('hs-strip'),f=document.getElementById('hs-full'),b=document.getElementById('vt-btn');
   if(_expanded){s.style.display='none';f.style.display='grid';b.classList.add('exp');b.querySelector('.vt-txt').textContent='Show compact view';}
-  else{s.style.display='grid';f.style.display='none';b.classList.remove('exp');b.querySelector('.vt-txt').textContent='See full ingredient details';}
+  else{s.style.display='grid';f.style.display='none';b.classList.remove('exp');b.querySelector('.vt-txt').textContent='See full details';}
 }
 
 function renderResults(data){
   var dosha=data.dosha||'Vata',color=DC[dosha]||'#8B6014';
   var showSign=(_cnt===1&&!_user);
+  var mobile=isMobile();
+  // On mobile start compact (strip tiles); on desktop start expanded (full cards)
+  _expanded=!mobile;
   var protoCTA=_user
     ?buildProtoCTA()
     :'<div class="signin-tease"><div><div class="st-t">✦ Want your personal protocol?</div><div class="st-s" style="margin-top:2px">Sign in free — get exact dosing, daily schedule, timeline &amp; scientific references tailored to you.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>';
@@ -876,9 +935,9 @@ function renderResults(data){
     +'<div class="rp-div"></div>'
     +'<div class="rp-dosha"><div><div class="rp-dl">Imbalanced Dosha</div><div class="rp-dn" style="color:'+color+'">'+dosha+'</div></div><div class="rp-ds"></div><div class="rp-di">'+data.dosha_insight+'</div></div>'
     +'<div class="view-toggle"><div class="vt-lbl">Your 4 recommended remedies</div><div class="vt-sp"></div>'
-    +'<button class="vt-btn exp" id="vt-btn" onclick="toggleExpand()"><span class="vt-ic">▲</span><span class="vt-txt">Show compact view</span></button></div>'
-    +'<div class="herb-strip" id="hs-strip" style="display:none">'+stripTiles()+'</div>'
-    +'<div class="cards-grid" id="hs-full">'+fullCards()+'</div>'
+    +'<button class="vt-btn'+(mobile?'':' exp')+'" id="vt-btn" onclick="toggleExpand()"><span class="vt-ic">▲</span><span class="vt-txt">'+(mobile?'See full details':'Show compact view')+'</span></button></div>'
+    +'<div class="herb-strip" id="hs-strip" style="'+(mobile?'':'display:none')+'">'+stripTiles()+'</div>'
+    +'<div class="cards-grid" id="hs-full" style="'+(mobile?'display:none':'')+'">'+fullCards()+'</div>'
     +kitSection()
     +protoCTA
     +(showSign?'<div class="signin-tease" style="margin-top:12px"><div><div class="st-t">Enjoying ĀNANDA?</div><div class="st-s" style="margin-top:2px">Sign in for unlimited searches &amp; personalized guidance.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>':'')
@@ -933,13 +992,14 @@ function renderProtocol(p){
     var hasHerbs=(s.herbs||[]).length>0;
     var herbs=hasHerbs
       ?s.herbs.map(function(h){
+          var scPanelId='scp-'+si+'-'+h.herb.replace(/\s+/g,'');
           var r=_herbs.find(function(x){return x.name.toLowerCase().indexOf(h.herb.toLowerCase())>=0||h.herb.toLowerCase().indexOf(x.name.toLowerCase())>=0;});
-          var amzUrl=r&&r.products&&r.products[0]?'https://www.amazon.com/s?k='+encodeURIComponent(r.products[0].search)+'&tag=lifeeconomy-20':'https://www.amazon.com/s?k='+encodeURIComponent(h.herb+' ayurvedic')+'&tag=lifeeconomy-20';
+          var prods=r&&r.products&&r.products.length?r.products.slice(0,3).map(function(p){var url='https://www.amazon.com/s?k='+encodeURIComponent(p.search||p.product)+'&tag=lifeeconomy-20';return '<div class="sc-pp-item"><div class="sc-pp-name">'+p.brand+' · '+p.product+'</div><a class="sc-pp-buy" href="'+url+'" target="_blank" rel="noopener">🛒 Buy</a></div>';}).join(''):'';
           return '<div class="sc-herb">'
             +'<div class="sc-hname">'+h.herb+'</div>'
             +'<div class="sc-hdose">'+h.dose+'</div>'
             +'<div class="sc-hanu">'+h.anupana+'</div>'
-            +'<a href="'+amzUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;background:#FF9900;color:#232F3E;text-decoration:none;padding:5px 11px;border-radius:3px;font-size:9.5px;font-weight:700;margin-top:6px;transition:background .15s" onmouseover="this.style.background=\'#e68a00\'" onmouseout="this.style.background=\'#FF9900\'">🛒 Buy</a>'
+            +(prods?'<button class="sc-buy-btn" onclick="toggleProdPanel(\''+scPanelId+'\')" title="Shop options">+</button><div class="sc-prod-panel" id="'+scPanelId+'">'+prods+'</div>':'')
             +'</div>';
         }).join('')
       :'<div class="sc-rest">Rest period — let the herbs do their work</div>';
