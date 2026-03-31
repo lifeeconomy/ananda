@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ĀNANDA — Ayurvedic Wisdom</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#0D1A11;--forest-mid:#162A1C;--forest-light:#1E3826;
+  --parchment:#E6D4A0;--parchment-dim:#A89060;
+  --gold:#C9962A;--gold-light:#E4B84A;
+  --cream:#F5F0E8;--linen:#EBE4D6;--ink:#241E13;--muted:#8A7A62;
+  --white:#FFFFFF;--amber:#B45309;--green-ok:#4caf7a;--amazon:#FF9900;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--forest);color:var(--ink);overflow:hidden}
+
+/* ══ HOME MODE: full-screen dark beauty ═══════════ */
+body.home-mode{overflow:hidden;background:var(--forest)}
+body.home-mode #app{display:flex;align-items:center;justify-content:center;height:100vh;position:relative;overflow:hidden}
+body.home-mode #app::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 30%,rgba(201,150,42,.07) 0%,transparent 55%),radial-gradient(ellipse at 75% 70%,rgba(30,56,38,.6) 0%,transparent 55%);pointer-events:none}
+body.home-mode #app::after{content:'ॐ';position:absolute;right:-60px;bottom:-80px;font-size:420px;color:rgba(201,150,42,.025);font-family:'Cormorant Garamond',serif;line-height:1;pointer-events:none;user-select:none}
+body.home-mode .lp{width:100%;max-width:640px;background:transparent;padding:0 56px;position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;min-height:100vh}
+body.home-mode .rp-home{display:none}
+body.home-mode #top-bar,body.home-mode #results-page{display:none}
+/* Mandala rings on home */
+.home-ring{position:absolute;border:1px solid rgba(201,150,42,.06);border-radius:50%;pointer-events:none}
+.home-ring.r1{width:640px;height:640px;top:50%;left:50%;transform:translate(-50%,-50%)}
+.home-ring.r2{width:440px;height:440px;top:50%;left:50%;transform:translate(-50%,-50%)}
+.home-ring.r3{width:260px;height:260px;top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* ══ RESULTS MODE ═════════════════════════════════ */
+body.results-mode{overflow:hidden;background:var(--cream)}
+body.results-mode #app{display:none}
+body.results-mode #top-bar{display:flex}
+body.results-mode #results-page{display:block}
+
+/* ══ HOME CONTENT ════════════════════════════════ */
+.logo-bl{margin-bottom:32px;cursor:pointer}
+.logo{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;letter-spacing:.38em;color:var(--gold);line-height:1;margin-bottom:5px;transition:opacity .2s}
+.logo:hover{opacity:.8}
+.logo-s{font-family:'Cormorant Garamond',serif;font-size:11px;color:rgba(201,150,42,.3);letter-spacing:.09em}
+.api-bl{margin-bottom:24px}
+.api-lbl{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(201,150,42,.36);font-weight:500;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.api-lbl::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:rgba(201,150,42,.3)}
+.api-lbl.ok{color:rgba(76,175,122,.68)}.api-lbl.ok::before{background:var(--green-ok);box-shadow:0 0 5px rgba(76,175,122,.3)}
+.api-row{display:flex;gap:6px}
+.api-i{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(201,150,42,.13);border-radius:3px;color:rgba(232,212,160,.6);font-family:monospace;font-size:11px;padding:8px 10px;outline:none;transition:border-color .2s}
+.api-i::placeholder{color:rgba(232,212,160,.13)}.api-i:focus{border-color:rgba(201,150,42,.26)}
+.api-sv{background:transparent;border:1px solid rgba(201,150,42,.18);border-radius:3px;color:rgba(201,150,42,.5);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:9.5px;letter-spacing:.1em;padding:8px 13px;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+.api-sv:hover{background:rgba(201,150,42,.08);color:var(--gold)}
+.inp-area{display:flex;flex-direction:column;gap:16px}
+.oracle-q{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;font-style:italic;color:var(--parchment);line-height:1.35}
+.g-line{width:32px;height:1px;background:var(--gold);opacity:.38}
+.inp-hint{font-size:11.5px;color:var(--parchment-dim);letter-spacing:.04em;line-height:1.7}
+textarea{background:rgba(255,255,255,.04);border:1px solid rgba(201,150,42,.16);border-radius:4px;color:var(--parchment);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;line-height:1.75;padding:15px 17px;resize:none;height:120px;outline:none;transition:border-color .3s;width:100%}
+textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:rgba(201,150,42,.38)}
+.btn-row{display:flex;align-items:center;gap:14px}
+.seek-btn{background:var(--gold);border:none;border-radius:4px;color:var(--forest);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;padding:13px 28px;text-transform:uppercase;transition:background .2s,transform .14s,box-shadow .2s}
+.seek-btn:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,150,42,.22)}.seek-btn:disabled{opacity:.36;cursor:not-allowed;transform:none;box-shadow:none}
+.k-hint{font-size:10.5px;color:rgba(201,150,42,.2);letter-spacing:.05em}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.chip{padding:6px 13px;border:1px solid rgba(201,150,42,.2);border-radius:20px;font-size:11px;color:rgba(232,212,160,.55);cursor:pointer;transition:all .2s;background:transparent;font-family:'DM Sans',sans-serif}
+.chip:hover{border-color:var(--gold);color:var(--parchment);background:rgba(201,150,42,.07)}
+.bot-note{font-size:9px;color:rgba(232,212,160,.13);letter-spacing:.04em;line-height:1.65;margin-top:28px}
+
+/* ══ MORTAR & PESTLE LOADER ══════════════════════ */
+.loading-state{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+.mortar-wrap{width:120px;height:120px;position:relative;flex-shrink:0}
+.mortar-svg{width:100%;height:100%;overflow:visible}
+.pestle-g{animation:pestleRock 1.4s ease-in-out infinite;transform-origin:72px 38px}
+@keyframes pestleRock{0%{transform:rotate(-18deg)}50%{transform:rotate(14deg)}100%{transform:rotate(-18deg)}}
+.mortar-fill-anim{animation:fillRise 2.8s ease-in-out infinite;transform-origin:60px 80px}
+@keyframes fillRise{0%,100%{transform:scaleY(0.5);opacity:.4}50%{transform:scaleY(1.1);opacity:.9}}
+.particle{animation:flyOff 1.4s ease-out infinite;opacity:0}
+.p1{animation-delay:0s}.p2{animation-delay:.35s}.p3{animation-delay:.7s}.p4{animation-delay:1.05s}
+@keyframes flyOff{0%{opacity:0;transform:translate(0,0) scale(1)}30%{opacity:.7}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0.3)}}
+/* Fill progress bar */
+.mortar-progress-wrap{width:140px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.mortar-progress-bar{width:100%;height:3px;background:rgba(201,150,42,.15);border-radius:2px;overflow:hidden}
+.mortar-progress-fill{height:100%;background:var(--gold);border-radius:2px;animation:progressFill 18s linear forwards}
+@keyframes progressFill{0%{width:0%}85%{width:88%}100%{width:94%}}
+.mortar-progress-txt{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--parchment-dim);opacity:.5;transition:opacity .3s}
+.sl-d{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--gold);opacity:0;animation:sf 3.9s ease-in-out infinite;letter-spacing:.04em;text-align:center}
+.sl-t{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);opacity:0;animation:sf 3.9s ease-in-out infinite;animation-delay:.2s;text-align:center}
+@keyframes sf{0%{opacity:0;transform:translateY(5px)}18%{opacity:1;transform:translateY(0)}78%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-4px)}}
+
+/* ══ TOP BAR ════════════════════════════════════ */
+#top-bar{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--forest);height:58px;display:none;align-items:center;padding:0 30px;gap:16px;border-bottom:1px solid rgba(201,150,42,.1);box-shadow:0 4px 20px rgba(0,0,0,.26)}
+.tb-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;letter-spacing:.3em;color:var(--gold);flex-shrink:0;cursor:pointer;transition:opacity .2s}
+.tb-logo:hover{opacity:.75}
+.tb-q{flex:1;font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--parchment-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-name{font-size:11px;color:rgba(232,212,160,.33);letter-spacing:.05em}
+.tb-edit-btn{background:rgba(201,150,42,.1);border:1px solid rgba(201,150,42,.2);border-radius:3px;color:rgba(201,150,42,.65);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:9.5px;letter-spacing:.1em;padding:6px 11px;text-transform:uppercase;transition:all .2s}
+.tb-edit-btn:hover{background:rgba(201,150,42,.18);color:var(--gold)}
+.tb-ns{background:rgba(201,150,42,.1);border:1px solid rgba(201,150,42,.2);border-radius:3px;color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;padding:7px 13px;text-transform:uppercase;transition:all .2s}
+.tb-ns:hover{background:rgba(201,150,42,.18)}
+
+/* ══ RESULTS PAGE ════════════════════════════════ */
+#results-page{display:none;height:100vh;overflow-y:auto;padding:72px 0 0;background:var(--cream)}
+#results-page::-webkit-scrollbar{width:3px}
+#results-page::-webkit-scrollbar-thumb{background:rgba(201,150,42,.15);border-radius:2px}
+.rp{max-width:1320px;margin:0 auto;padding:24px 34px 64px}
+.rp-greet{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:13px}
+.rp-div{height:1px;background:var(--linen);margin-bottom:13px}
+.rp-dosha{display:inline-flex;align-items:center;gap:13px;background:rgba(201,150,42,.065);border:1px solid rgba(201,150,42,.16);border-radius:4px;padding:10px 17px;margin-bottom:22px}
+.rp-dl{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.rp-dn{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;margin-top:2px}
+.rp-ds{width:1px;height:28px;background:rgba(201,150,42,.18)}
+.rp-di{font-size:12px;color:var(--muted);line-height:1.65;max-width:440px}
+
+/* ══ VIEW TOGGLE — obvious ════════════════════════ */
+.view-toggle{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.vt-lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.vt-sp{flex:1;height:1px;background:var(--linen)}
+.vt-btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);border:none;border-radius:4px;color:var(--parchment);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.1em;padding:9px 18px;text-transform:uppercase;transition:all .2s;box-shadow:0 2px 8px rgba(36,30,19,.15)}
+.vt-btn:hover{background:var(--forest-light);transform:translateY(-1px)}
+.vt-ic{font-size:12px;transition:transform .25s}
+.vt-btn.exp .vt-ic{transform:rotate(180deg)}
+
+/* Herb art containers */
+.hs-art{position:absolute;inset:0;z-index:0}
+.hf-art{position:absolute;inset:0;z-index:0}
+
+/* ══ HERB STRIP TILES — CSS art, always stunning ═ */
+.herb-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:1100px){.herb-strip,.cards-grid{grid-template-columns:repeat(2,1fr)}}
+
+.hs-tile{border-radius:8px;overflow:hidden;height:215px;position:relative;cursor:pointer;box-shadow:0 6px 24px rgba(36,30,19,.2);transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s;opacity:0;transform:translateY(16px);animation:cIn .5s cubic-bezier(.16,1,.3,1) forwards}
+.hs-tile:hover{transform:translateY(-6px);box-shadow:0 18px 48px rgba(36,30,19,.3)}
+.hs-tile:nth-child(1){animation-delay:.06s}.hs-tile:nth-child(2){animation-delay:.13s}.hs-tile:nth-child(3){animation-delay:.2s}.hs-tile:nth-child(4){animation-delay:.27s}
+@keyframes cIn{to{opacity:1;transform:translateY(0)}}
+
+.hs-grad{position:absolute;inset:0;z-index:0}
+.g0{background:linear-gradient(155deg,#5C3200 0%,#A05A10 45%,#D08020 80%,#8B4A0A 100%)}
+.g1{background:linear-gradient(155deg,#0A2010 0%,#1A4E28 45%,#22804A 80%,#0D3018 100%)}
+.g2{background:linear-gradient(155deg,#5C1010 0%,#941E1E 45%,#C04830 80%,#6A1010 100%)}
+.g3{background:linear-gradient(155deg,#160E30 0%,#351875 45%,#5E38B8 80%,#200E50 100%)}
+
+/* Large emoji watermark */
+.hs-emoji{position:absolute;bottom:-10px;right:8px;z-index:1;font-size:80px;opacity:.18;line-height:1;filter:saturate(0) brightness(2);pointer-events:none;user-select:none}
+/* Fine pattern overlay for texture */
+.hs-texture{position:absolute;inset:0;z-index:1;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0px,rgba(255,255,255,.025) 1px,transparent 1px,transparent 12px),repeating-linear-gradient(-45deg,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 12px)}
+.hs-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(to top,rgba(10,22,13,.92) 0%,rgba(10,22,13,.4) 55%,rgba(10,22,13,.05) 100%)}
+.hs-content{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px 16px}
+.hs-skt{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:rgba(255,255,255,.93);line-height:1.05;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.hs-roman{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:rgba(201,150,42,.85);margin-top:3px}
+.hs-eng{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.82);margin-top:8px}
+.hs-tag{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,150,42,.65);margin-top:2px}
+.hs-badge{position:absolute;top:12px;right:12px;z-index:4;background:rgba(10,22,13,.74);border:1px solid rgba(201,150,42,.3);border-radius:4px;padding:5px 10px;backdrop-filter:blur(4px)}
+.hs-badge-top{font-size:7.5px;letter-spacing:.09em;text-transform:uppercase;color:rgba(201,150,42,.65);margin-bottom:1px}
+.hs-badge-val{font-size:12px;font-weight:500;color:var(--gold-light)}
+
+/* ══ FULL EXPANDED CARDS ════════════════════════ */
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.hf{background:var(--white);border-radius:8px;overflow:hidden;box-shadow:0 2px 14px rgba(36,30,19,.08),0 0 0 1px rgba(36,30,19,.05);display:flex;flex-direction:column;opacity:0;transform:translateY(12px);animation:cIn .4s cubic-bezier(.16,1,.3,1) forwards;transition:transform .25s,box-shadow .25s}
+.hf:hover{transform:translateY(-5px);box-shadow:0 14px 40px rgba(36,30,19,.14)}
+.hf:nth-child(1){animation-delay:.05s}.hf:nth-child(2){animation-delay:.11s}.hf:nth-child(3){animation-delay:.17s}.hf:nth-child(4){animation-delay:.23s}
+.hf-photo{height:170px;position:relative;overflow:hidden;flex-shrink:0}
+.hf-grad{position:absolute;inset:0;z-index:0}
+.hf-emoji{position:absolute;bottom:-6px;right:8px;z-index:1;font-size:70px;opacity:.2;line-height:1;filter:saturate(0) brightness(2);pointer-events:none;user-select:none}
+.hf-tex{position:absolute;inset:0;z-index:1;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0px,rgba(255,255,255,.025) 1px,transparent 1px,transparent 12px)}
+.hf-ov{position:absolute;inset:0;z-index:2;background:linear-gradient(to top,rgba(10,22,13,.82) 0%,rgba(10,22,13,.15) 55%,transparent 100%)}
+.hf-badge{position:absolute;top:9px;right:9px;z-index:4;background:rgba(10,22,13,.66);border:1px solid rgba(201,150,42,.26);border-radius:20px;padding:4px 9px;font-size:8.5px;color:var(--gold-light);backdrop-filter:blur(4px)}
+.hf-skt-w{position:absolute;bottom:10px;left:12px;right:12px;z-index:3}
+.hf-skt{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:rgba(255,255,255,.91);line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.35)}
+.hf-roman{font-size:8px;letter-spacing:.17em;text-transform:uppercase;color:rgba(201,150,42,.8);margin-top:2px}
+.hf-body{padding:13px 14px 15px;display:flex;flex-direction:column;flex:1}
+.hf-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.hf-tag{font-size:8px;letter-spacing:.17em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:9px}
+.hf-ben{font-size:11.5px;font-weight:500;color:var(--ink);line-height:1.6;margin-bottom:7px}
+.hf-desc{font-size:10.5px;color:var(--muted);line-height:1.78;margin-bottom:10px}
+.hf-how{background:var(--cream);border-radius:3px;padding:9px 11px;margin-bottom:9px}
+.hf-how-l{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:3px}
+.hf-how-t{font-size:10.5px;color:var(--ink);line-height:1.7}
+.hf-caution{font-size:10px;color:var(--amber);background:rgba(180,83,9,.06);border-left:2px solid rgba(180,83,9,.22);padding:7px 10px;border-radius:0 3px 3px 0;margin-bottom:9px;line-height:1.55}
+.hf-review{border-top:1px solid var(--linen);padding-top:9px;margin-bottom:10px}
+.hf-stars{color:var(--gold);font-size:9.5px;letter-spacing:2px;margin-bottom:4px}
+.hf-review-t{font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:var(--ink);line-height:1.65;margin-bottom:4px}
+.hf-review-a{font-size:9px;color:var(--muted)}
+
+/* Top 3 Product Picks */
+.hf-picks-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);font-weight:600;margin-bottom:8px;margin-top:4px}
+.hf-pick{background:rgba(13,26,17,.04);border:1px solid rgba(13,26,17,.08);border-radius:4px;padding:8px 10px;margin-bottom:6px;display:flex;flex-direction:column;gap:2px}
+.hf-pick-brand{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.hf-pick-name{font-size:11px;font-weight:500;color:var(--ink);line-height:1.3}
+.hf-pick-why{font-size:9.5px;color:var(--muted);line-height:1.5}
+.hf-pick-buy{display:inline-flex;align-items:center;gap:5px;background:var(--amazon);color:#232F3E;text-decoration:none;padding:6px 12px;border-radius:3px;font-size:9.5px;font-weight:600;margin-top:4px;transition:background .2s}
+.hf-pick-buy:hover{background:#e68a00}
+
+/* ══ BUY ALL 4 KIT ══════════════════════════════ */
+.kit-bar{background:var(--forest);border-radius:8px;padding:20px 26px;margin-top:18px;border:1px solid rgba(201,150,42,.2);position:relative;overflow:hidden}
+.kit-bar::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 50%,rgba(201,150,42,.08) 0%,transparent 60%);pointer-events:none}
+.kit-bar-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.kit-bar-txt{display:flex;flex-direction:column;gap:4px}
+.kit-bar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--parchment)}
+.kit-bar-sub{font-size:11px;color:var(--parchment-dim);opacity:.55;line-height:1.5;max-width:540px}
+.kit-buy-all{background:var(--amazon);border:none;border-radius:4px;color:#232F3E;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;padding:12px 24px;white-space:nowrap;transition:background .2s;flex-shrink:0}
+.kit-buy-all:hover{background:#e68a00}
+.kit-herbs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:900px){.kit-herbs{grid-template-columns:repeat(2,1fr)}}
+.kit-herb{background:rgba(255,255,255,.06);border:1px solid rgba(201,150,42,.12);border-radius:5px;padding:11px 13px}
+.kit-herb-name{font-size:11.5px;font-weight:500;color:var(--parchment);margin-bottom:4px}
+.kit-herb-prod{font-size:10px;color:rgba(201,150,42,.75);margin-bottom:5px;line-height:1.4}
+.kit-herb-btn{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--amazon);color:#232F3E;text-decoration:none;padding:6px 0;border-radius:3px;font-size:9.5px;font-weight:600;transition:background .2s;width:100%}
+.kit-herb-btn:hover{background:#e68a00}
+
+.signin-tease{background:rgba(201,150,42,.07);border:1px solid rgba(201,150,42,.16);border-radius:4px;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
+.st-t{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--ink)}
+.st-s{font-size:10px;color:var(--muted)}
+.st-btn{background:var(--forest);border:none;border-radius:3px;color:var(--parchment);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.13em;padding:8px 16px;text-transform:uppercase;flex-shrink:0;transition:background .2s}
+.st-btn:hover{background:var(--forest-light)}
+
+/* ══ PROTOCOL CTA — unmissable ════════════════════ */
+.proto-cta{background:var(--forest);border-radius:8px;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid rgba(201,150,42,.3);margin-top:22px;position:relative;overflow:hidden;box-shadow:0 0 0 1px rgba(201,150,42,.15),0 8px 32px rgba(201,150,42,.1)}
+.proto-cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(201,150,42,.12) 0%,transparent 60%),radial-gradient(ellipse at 85% 50%,rgba(201,150,42,.06) 0%,transparent 50%);pointer-events:none;animation:ctaPulse 3s ease-in-out infinite}
+@keyframes ctaPulse{0%,100%{opacity:.7}50%{opacity:1}}
+.proto-cta::before{content:'ॐ';position:absolute;right:-8px;top:-22px;font-family:'Cormorant Garamond',serif;font-size:120px;color:rgba(201,150,42,.06);pointer-events:none;user-select:none}
+.proto-cta-l{display:flex;flex-direction:column;gap:5px;position:relative;z-index:1}
+.proto-cta-eyebrow{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;opacity:.8}
+.proto-cta-t{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--parchment);line-height:1.25}
+.proto-cta-s{font-size:11px;color:var(--parchment-dim);opacity:.5;line-height:1.55;max-width:520px}
+.proto-cta-bullets{display:flex;gap:16px;margin-top:4px;flex-wrap:wrap}
+.proto-cta-bullets span{font-size:10px;color:rgba(201,150,42,.65);letter-spacing:.04em}
+.proto-cta-btn{background:var(--gold);border:none;border-radius:5px;color:var(--forest);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.12em;padding:15px 28px;text-transform:uppercase;white-space:nowrap;transition:background .2s,transform .15s,box-shadow .2s;flex-shrink:0;position:relative;z-index:1;box-shadow:0 4px 16px rgba(201,150,42,.35)}
+.proto-cta-btn:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,150,42,.45)}
+
+/* ══ PROTOCOL SECTION ════════════════════════════ */
+#proto-sec{margin-top:32px;opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+#proto-sec.on{opacity:1;transform:translateY(0)}
+.pv{background:var(--forest);border-radius:8px;padding:26px 30px;margin-bottom:22px;position:relative;overflow:hidden;border:1px solid rgba(201,150,42,.14)}
+.pv::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(201,150,42,.08) 0%,transparent 65%);pointer-events:none}
+.pv-tag{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:6px;opacity:.7}
+.pv-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--parchment);margin-bottom:5px}
+.pv-sub{font-size:13px;color:rgba(232,212,160,.52);line-height:1.65;max-width:680px}
+.pv-syn{font-size:11.5px;color:rgba(232,212,160,.38);line-height:1.7;margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,150,42,.1);max-width:680px}
+.sec-lbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--linen)}
+
+/* Schedule — muted, forest-aligned day cards */
+.sched-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+@media(max-width:900px){.sched-grid{grid-template-columns:repeat(2,1fr)}}
+.sc-card{border-radius:8px;overflow:hidden;box-shadow:0 4px 18px rgba(36,30,19,.2);animation:cIn .4s cubic-bezier(.16,1,.3,1) both}
+.sc-card:nth-child(2){animation-delay:.07s}.sc-card:nth-child(3){animation-delay:.14s}.sc-card:nth-child(4){animation-delay:.21s}
+.sc-morning{background:linear-gradient(155deg,#1C1008 0%,#2E1A0A 40%,#3C2410 80%,#4A2E14 100%)}
+.sc-afternoon{background:linear-gradient(155deg,#081008 0%,#0D1A11 40%,#162A1C 80%,#1A3020 100%)}
+.sc-evening{background:linear-gradient(155deg,#120C08 0%,#1E1008 40%,#2C1610 80%,#381C12 100%)}
+.sc-night{background:linear-gradient(155deg,#080810 0%,#0A0A1A 40%,#0E1028 80%,#121430 100%)}
+.sc-hdr{padding:15px 17px 11px;border-bottom:1px solid rgba(201,150,42,.12);position:relative}
+.sc-hdr::before{content:attr(data-icon);position:absolute;right:14px;top:8px;font-size:28px;opacity:.15}
+.sc-time-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--parchment);margin-bottom:2px}
+.sc-time-sub{font-size:9.5px;color:var(--parchment-dim);opacity:.5;letter-spacing:.05em}
+.sc-herbs{padding:13px 17px 15px;display:flex;flex-direction:column;gap:11px}
+.sc-herb{display:flex;flex-direction:column;gap:3px}
+.sc-hname{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--parchment)}
+.sc-hdose{font-size:10.5px;color:var(--parchment-dim);opacity:.65}
+.sc-hanu{display:inline-block;font-size:9.5px;color:rgba(201,150,42,.8);background:rgba(201,150,42,.1);border:1px solid rgba(201,150,42,.2);border-radius:20px;padding:2px 9px;margin-top:2px}
+.sc-rest{font-size:11px;color:var(--parchment-dim);opacity:.35;font-style:italic;padding:13px 17px 15px}
+
+/* ══ TIMELINE — JAZZED UP, GRANDMA-CLEAR ════════ */
+.tl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;position:relative}
+.tl-grid::before{content:'';position:absolute;top:50px;left:calc(100%/6);right:calc(100%/6);height:2px;background:linear-gradient(90deg,rgba(201,150,42,.25) 0%,rgba(201,150,42,.65) 50%,var(--gold) 100%);border-radius:1px;z-index:0}
+.tl-card{border-radius:8px;overflow:hidden;box-shadow:0 4px 16px rgba(36,30,19,.12);position:relative;z-index:1;animation:cIn .45s cubic-bezier(.16,1,.3,1) both}
+.tl-card:nth-child(2){animation-delay:.09s}.tl-card:nth-child(3){animation-delay:.18s}
+.tl-card-1{background:linear-gradient(160deg,#1C1008 0%,#2A1808 45%,#381E0A 100%)}
+.tl-card-2{background:linear-gradient(160deg,#081008 0%,#0D1A11 45%,#162A1C 100%)}
+.tl-card-3{background:linear-gradient(160deg,#141008 0%,#20180A 45%,#2E2410 100%)}
+.tl-card-hdr{padding:18px 20px 14px;position:relative}
+.tl-card-emoji{font-size:40px;margin-bottom:8px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+.tl-card-num{position:absolute;top:14px;right:16px;font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:rgba(255,255,255,.1);line-height:1}
+.tl-card-period{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(201,150,42,.8);font-weight:500;margin-bottom:5px}
+.tl-card-headline{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:rgba(255,255,255,.92);line-height:1.2}
+.tl-card-body{padding:13px 20px 18px;background:rgba(0,0,0,.2)}
+.tl-card-text{font-size:12px;color:rgba(255,255,255,.65);line-height:1.7}
+
+/* ══ PAPERS — muted, minimal ════════════════════ */
+.papers-wrap{background:rgba(36,30,19,.025);border:1px solid rgba(36,30,19,.07);border-radius:5px;overflow:hidden;margin-bottom:12px}
+.paper-row{padding:12px 15px;border-bottom:1px solid rgba(36,30,19,.05);display:grid;grid-template-columns:24px 1fr;gap:10px}
+.paper-row:last-child{border-bottom:none}
+.paper-n{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300;color:rgba(36,30,19,.18);margin-top:2px}
+.paper-t{font-size:11px;font-weight:500;color:rgba(36,30,19,.55);line-height:1.4;margin-bottom:2px}
+.paper-m{font-size:9.5px;color:var(--muted);opacity:.65;margin-bottom:4px}
+.paper-f{font-size:10px;color:rgba(36,30,19,.5);line-height:1.6;background:rgba(36,30,19,.04);padding:5px 8px;border-radius:2px;border-left:2px solid rgba(201,150,42,.18)}
+.paper-doi{display:inline-block;font-size:9px;color:rgba(201,150,42,.55);margin-top:4px;text-decoration:none}
+.paper-doi:hover{color:var(--gold)}
+
+/* Protocol loader */
+.proto-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0;gap:15px}
+.proto-spin{width:34px;height:34px;border:1px solid rgba(201,150,42,.13);border-top-color:var(--gold);border-radius:50%;animation:scw 1s linear infinite}
+.proto-loading-t{font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--muted)}
+
+/* ══ MODALS ══════════════════════════════════════ */
+.mbd{position:fixed;inset:0;background:rgba(13,26,17,.84);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center}
+.mbd.open{display:flex}
+.mbox{background:var(--white);border-radius:8px;padding:32px 28px;width:100%;max-width:380px;position:relative;box-shadow:0 28px 64px rgba(0,0,0,.26);animation:mIn .32s cubic-bezier(.16,1,.3,1) forwards;max-height:92vh;overflow-y:auto}
+@keyframes mIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.mx{position:absolute;top:11px;right:11px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s}.mx:hover{background:var(--linen)}
+.m-om{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gold);text-align:center;margin-bottom:3px}
+.m-tit{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;text-align:center;color:var(--ink);margin-bottom:3px}
+.m-sub{font-size:11px;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.65}
+.ab{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:10px 14px;background:var(--white);border:1.5px solid #dadce0;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;color:#3c4043;transition:box-shadow .2s,background .2s;margin-bottom:8px}
+.ab:hover{background:#f8f9fa;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.ab.amz{border-color:#FF9900;color:#232F3E}.ab.amz:hover{background:#FFF8EE}
+.ai{width:17px;height:17px;flex-shrink:0}
+.m-or{text-align:center;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:9px 0;position:relative}
+.m-or::before,.m-or::after{content:'';position:absolute;top:50%;width:calc(50% - 17px);height:1px;background:var(--linen)}.m-or::before{left:0}.m-or::after{right:0}
+.mf{margin-bottom:9px}
+.mf label{display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.mf input,.mf select{width:100%;padding:9px 11px;border:1.5px solid var(--linen);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;background:var(--white)}
+.mf input:focus,.mf select:focus{border-color:var(--gold)}
+.mf select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A7A62' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+.m-sb{width:100%;background:var(--forest);border:none;border-radius:3px;color:var(--parchment);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.15em;padding:12px;text-transform:uppercase;transition:background .2s;margin-top:2px}.m-sb:hover{background:var(--forest-light)}
+.m-leg{font-size:8.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;opacity:.55}
+.i-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+</style>
+</head>
+<body class="home-mode">
+
+<!-- AUTH MODAL -->
+<div class="mbd" id="auth-modal">
+  <div class="mbox">
+    <button class="mx" onclick="closeM('auth-modal')">✕</button>
+    <div class="m-om">ॐ</div>
+    <div class="m-tit">Join ĀNANDA</div>
+    <div class="m-sub">Sign in for unlimited searches, your personal protocol &amp; one-click Amazon ordering.</div>
+    <button class="ab" onclick="sso('google')">
+      <svg class="ai" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+    <button class="ab amz" onclick="sso('amazon')">
+      <svg class="ai" viewBox="0 0 48 48"><path fill="#FF9900" d="M13.6 34.4c8.5 5.6 20 8.9 31.4 4-1.2 2.8-3.1 5.3-5.5 7.4-7.6 6.6-18.8 7.2-27.1 1.5-1.2-.8-.1-2 1.2-1.2z"/><path fill="#FF9900" d="M36.6 31.5c-1-.4-2.1.1-3 .5-2.5 1-5.2 1.5-7.9 1.5-5.3 0-10.3-1.9-14.1-5.3-.8-.7-1.9-.1-1.4.9 2.3 5.1 7.8 8.4 14.3 8.4 3.1 0 6.3-.8 9.1-2.2 1.4-.7 4-1.4 3.6-3.2-.1-.3-.3-.5-.6-.6z"/><path fill="#232F3E" d="M24 8c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8zm0 4c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zm0 22.5c-3.7 0-7-1.9-9-4.8.1-3 6-4.6 9-4.6s8.9 1.6 9 4.6c-2 2.9-5.3 4.8-9 4.8z"/></svg>
+      Continue with Amazon
+    </button>
+    <div class="m-or">or email</div>
+    <div class="mf"><label>Your name</label><input type="text" id="an" placeholder="e.g. Priya" autocomplete="name"/></div>
+    <div class="mf"><label>Email address</label><input type="email" id="ae" placeholder="you@example.com" autocomplete="email"/></div>
+    <button class="m-sb" onclick="submitAuth()">Continue →</button>
+    <div class="m-leg">Your data is never sold or shared. Amazon sign-in enables one-click cart for recommended herbs.</div>
+  </div>
+</div>
+
+<!-- INTAKE / EDIT PROFILE MODAL -->
+<div class="mbd" id="intake-modal">
+  <div class="mbox">
+    <button class="mx" onclick="closeM('intake-modal')">✕</button>
+    <div class="m-om" style="font-size:22px">🌿</div>
+    <div class="m-tit" style="margin-bottom:3px" id="intake-title">Personalize your path</div>
+    <div class="m-sub" id="intake-sub">Quick intake so ĀNANDA can tailor guidance specifically to you.</div>
+    <div class="i-row">
+      <div class="mf"><label>Age range</label>
+        <select id="ia"><option value="">Select…</option><option>18–25</option><option>26–35</option><option>36–45</option><option>46–55</option><option>56–65</option><option>65+</option></select></div>
+      <div class="mf"><label>Biological sex</label>
+        <select id="is"><option value="">Select…</option><option>Female</option><option>Male</option><option>Prefer not to say</option></select></div>
+    </div>
+    <div class="mf"><label>Primary health focus</label>
+      <select id="if"><option value="">Select…</option><option>Energy &amp; Vitality</option><option>Digestion &amp; Gut Health</option><option>Sleep &amp; Stress</option><option>Skin &amp; Immunity</option><option>Joint &amp; Muscle Health</option><option>Mental Clarity &amp; Focus</option><option>Hormonal Balance</option><option>Weight &amp; Metabolism</option></select></div>
+    <div class="mf"><label>Dosha tendency <span style="font-size:8px;opacity:.4;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <select id="id"><option value="">Not sure</option><option>Vata — anxious, dry, light</option><option>Pitta — fiery, sharp, intense</option><option>Kapha — heavy, steady, slow</option></select></div>
+    <div class="mf"><label>Medical conditions or allergies</label><input type="text" id="ic" placeholder="e.g. hypertension, pregnant, thyroid, none"/></div>
+    <div class="mf"><label>Upload medical report <span style="font-size:8px;opacity:.4;text-transform:none;letter-spacing:0">(optional — paste key details below)</span></label>
+      <textarea id="ireport" style="height:60px;font-size:12px;background:var(--cream);border:1.5px solid var(--linen);border-radius:3px;color:var(--ink);padding:8px 10px;width:100%;resize:none;outline:none;font-family:'DM Sans',sans-serif" placeholder="Paste relevant medical report details or lab values…" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--linen)'"></textarea></div>
+    <button class="m-sb" onclick="submitIntake()">Save my profile →</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div id="top-bar">
+  <div class="tb-logo" onclick="goHome()">ĀNANDA</div>
+  <div class="tb-q" id="tb-q"></div>
+  <div class="tb-r">
+    <div class="tb-name" id="tb-name"></div>
+    <button class="tb-edit-btn" id="tb-edit-btn" onclick="openEditProfile()" style="display:none">✎ Profile</button>
+    <button class="tb-ns" onclick="goHome()">↩ Home</button>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="results-page"><div id="rpc"></div></div>
+
+<!-- HOME (full screen) -->
+<div id="app">
+  <div class="home-ring r1"></div>
+  <div class="home-ring r2"></div>
+  <div class="home-ring r3"></div>
+  <div class="lp">
+    <div class="logo-bl" onclick="goHome()">
+      <div class="logo">ĀNANDA</div>
+      <div class="logo-s">आनन्द · Ayurvedic Wellness</div>
+    </div>
+    <div class="api-bl">
+      <div class="api-lbl" id="api-lbl">Anthropic API Key</div>
+      <div class="api-row"><input type="password" id="api-in" class="api-i" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false"/><button class="api-sv" onclick="saveKey()">Save</button></div>
+    </div>
+    <div class="inp-area">
+      <div class="oracle-q">What does your body wish to tell you today?</div>
+      <div class="g-line"></div>
+      <div class="inp-hint">Describe how you feel, what aches, what feels off.<br>Ancient wisdom — personalized to you.</div>
+      <textarea id="sym" placeholder="e.g. I've been exhausted and anxious, my digestion is slow, I can't sleep…"></textarea>
+      <div class="btn-row"><button class="seek-btn" id="seek-btn" onclick="seekRemedy()">Seek your remedy</button><div class="k-hint">⌘ + Enter</div></div>
+      <div class="chips">
+        <button class="chip" onclick="go('Exhausted, burned out, struggling to focus')">Exhausted &amp; foggy</button>
+        <button class="chip" onclick="go('Digestion off, bloated and heavy after eating')">Bloated &amp; sluggish</button>
+        <button class="chip" onclick="go('Anxious, restless, can\'t sleep well')">Anxious &amp; sleepless</button>
+        <button class="chip" onclick="go('Skin inflammation, hot and irritable')">Inflamed &amp; irritable</button>
+        <button class="chip" onclick="go('Low energy, depressed, heavy, unmotivated')">Low mood</button>
+        <button class="chip" onclick="go('Joint pain and stiffness, especially morning')">Joint pain</button>
+      </div>
+    </div>
+    <div class="bot-note">Rooted in Charaka Samhita, Sushruta Samhita &amp; Ashtanga Hridayam · Educational purposes only · Consult a qualified Ayurvedic practitioner</div>
+  </div>
+</div>
+
+<script>
+// ── SUPABASE ──────────────────────────────────────────────────────────────────
+// Replace these with your values from supabase.com → Project Settings → API
+var SUPABASE_URL  = 'https://zzrqmawsobgulqwvonbq.supabase.co';
+var SUPABASE_ANON = 'sb_publishable_W5EZRM9SfhtUzYwnUDK5bw_4T-H3s9a';
+var EDGE_FN_URL   = SUPABASE_URL+'/functions/v1/ananda-ai';
+var _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+var _sessionId=localStorage.getItem('ananda_sid')||(function(){var id='sess_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('ananda_sid',id);return id;})();
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+var _user=null,_sbSession=null,_ps=false,_pp=false,_herbs=[],_query='',_searchId=null,_expanded=true,FREE_N=3;
+
+// Init — restore session
+(async function(){
+  var s=await _sb.auth.getSession();
+  if(s.data.session){_sbSession=s.data.session;var p=await _sb.from('profiles').select('*').eq('id',s.data.session.user.id).single();_user=p.data;rname();}
+  _sb.auth.onAuthStateChange(async function(event,session){
+    if(session){
+      _sbSession=session;
+      var p2=await _sb.from('profiles').select('*').eq('id',session.user.id).single();
+      _user=p2.data;rname();
+      if(_ps){_ps=false;seekRemedy();}
+      else if(_pp){_pp=false;generateProtocol();}
+      else if(document.body.className==='results-mode'&&_herbs.length){refreshProtoCTA();}
+      if(!_user||!_user.age){setTimeout(function(){openM('intake-modal');},400);}
+    }else{_sbSession=null;_user=null;rname();}
+  });
+})();
+
+function rname(){var n=document.getElementById('tb-name'),e=document.getElementById('tb-edit-btn');if(_user){n.textContent='✦ '+(_user.name||'You');if(e)e.style.display='block';}else{n.textContent='';if(e)e.style.display='none';}}
+
+// ── MODALS ─────────────────────────────────────────────────────────────────────
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+function sso(p){
+  if(p==='google'){_sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});}
+  else{var n=prompt('Amazon Sign-In\nYour name:');if(!n)return;document.getElementById('an').value=n;submitAuth();}
+}
+
+function submitAuth(){
+  var e=document.getElementById('ae').value.trim(),n=document.getElementById('an').value.trim();
+  if(!e){alert('Please enter your email.');return;}
+  var btn=document.querySelector('#auth-modal .m-sb');
+  if(btn){btn.textContent='Sending link…';btn.disabled=true;}
+  _sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:window.location.href,data:{full_name:n||e.split('@')[0]}}}).then(function(r){
+    if(btn){btn.textContent='Continue →';btn.disabled=false;}
+    if(r.error){alert('Error: '+r.error.message);return;}
+    closeM('auth-modal');
+    alert('✉️ Magic link sent! Check your email — no password needed.');
+  });
+}
+
+function openEditProfile(){
+  document.getElementById('intake-title').textContent='Edit your health profile';
+  document.getElementById('intake-sub').textContent='Update your details for more personalized recommendations.';
+  if(_user){if(_user.age)document.getElementById('ia').value=_user.age;if(_user.sex)document.getElementById('is').value=_user.sex;if(_user.focus)document.getElementById('if').value=_user.focus;if(_user.dosha)document.getElementById('id').value=_user.dosha;if(_user.conditions)document.getElementById('ic').value=_user.conditions;if(_user.report)document.getElementById('ireport').value=_user.report;}
+  openM('intake-modal');
+}
+
+async function submitIntake(){
+  var updates={age:document.getElementById('ia').value,sex:document.getElementById('is').value,focus:document.getElementById('if').value,dosha:document.getElementById('id').value,conditions:document.getElementById('ic').value,report:document.getElementById('ireport').value.trim(),updated_at:new Date().toISOString()};
+  if(_sbSession){await _sb.from('profiles').update(updates).eq('id',_sbSession.user.id);_user=Object.assign(_user||{},updates);}
+  closeM('intake-modal');rname();
+  document.getElementById('intake-title').textContent='Personalize your path';
+  document.getElementById('intake-sub').textContent='Quick intake so ANANDA can tailor guidance specifically to you.';
+  if(_ps){_ps=false;seekRemedy();}else if(_pp){_pp=false;generateProtocol();}else if(document.body.className==='results-mode'&&_herbs.length){refreshProtoCTA();}
+}
+
+// ── AMAZON CLICK TRACKING ─────────────────────────────────────────────────────
+function trackClick(herb,product,brand,url){
+  _sb.from('amazon_clicks').insert({user_id:_sbSession?_sbSession.user.id:null,session_id:_sessionId,herb:herb,product:product,brand:brand,url:url});
+}
+
+function refreshProtoCTA(){
+  // Replace any signin-tease or old proto-cta with the full glowing CTA
+  var existing=document.getElementById('proto-cta');
+  var teases=document.querySelectorAll('.signin-tease');
+  // Remove first tease (the protocol one, not the general one)
+  if(teases.length>0)teases[0].remove();
+  if(existing)existing.remove();
+  // Insert the new CTA before proto-sec
+  var ps=document.getElementById('proto-sec');
+  if(ps&&ps.parentNode){
+    var div=document.createElement('div');
+    div.innerHTML=buildProtoCTA();
+    ps.parentNode.insertBefore(div.firstChild,ps);
+    // Animate it in
+    setTimeout(function(){
+      var el=document.getElementById('proto-cta');
+      if(el){el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .5s,transform .5s';setTimeout(function(){el.style.opacity='1';el.style.transform='translateY(0)';},50);}
+    },10);
+  }
+}
+
+function buildProtoCTA(){
+  return '<div class="proto-cta" id="proto-cta">'
+    +'<div class="proto-cta-glow"></div>'
+    +'<div class="proto-cta-l">'
+    +'<div class="proto-cta-eyebrow">✦ Personalized for '+_user.name+'</div>'
+    +'<div class="proto-cta-t">Get your personal formula &amp; daily protocol</div>'
+    +'<div class="proto-cta-s">Should you take all 4 or just one? Exact dosing, daily schedule, week-by-week timeline &amp; peer-reviewed science.</div>'
+    +'<div class="proto-cta-bullets">'
+    +'<span>⏰ Exact daily schedule</span>'
+    +'<span>📅 Week-by-week timeline</span>'
+    +'<span>🔬 Scientific research</span>'
+    +'</div>'
+    +'</div>'
+    +'<button class="proto-cta-btn" onclick="generateProtocol()">Build my protocol ✦</button>'
+    +'</div>';
+}
+
+// ── LOADER ────────────────────────────────────────────────────────────────────
+var SH=[{d:'प्रकृतिः परमौषधम्',t:'Nature is the supreme medicine'},{d:'आयुर्वेदः अमृतानाम्',t:'Ayurveda — science of immortality'},{d:'स्वस्थस्य स्वास्थ्य रक्षणम्',t:'Protect the health of the healthy'},{d:'सर्वे भवन्तु सुखिनः',t:'May all beings be well'},{d:'ओजो बलं स्वास्थ्यम्',t:'Ojas is strength · Ojas is health'}];
+var _si=0,_st=null;
+function startSh(){_si=0;showSh();_st=setInterval(function(){_si=(_si+1)%SH.length;showSh();},3900);}
+function stopSh(){if(_st){clearInterval(_st);_st=null;}}
+function showSh(){var d=document.getElementById('sl-d'),t=document.getElementById('sl-t');if(!d||!t)return;d.style.animation='none';t.style.animation='none';void d.offsetWidth;d.style.animation='';t.style.animation='';d.textContent=SH[_si].d;t.textContent=SH[_si].t;}
+function loaderHtml(){
+  return '<div class="loading-state">'
+    +'<div class="mortar-wrap">'
+    +'<svg class="mortar-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">'
+    +'<ellipse cx="60" cy="92" rx="46" ry="12" fill="rgba(201,150,42,0.12)"/>'
+    +'<path d="M18 72 Q14 105 60 108 Q106 105 102 72 Z" fill="rgba(201,150,42,0.14)" stroke="rgba(201,150,42,0.45)" stroke-width="1.5"/>'
+    +'<path d="M22 72 Q18 101 60 104 Q102 101 98 72" fill="none" stroke="rgba(201,150,42,0.25)" stroke-width="1"/>'
+    +'<g class="mortar-fill-anim">'
+    +'<ellipse cx="60" cy="90" rx="34" ry="10" fill="rgba(201,150,42,0.3)"/>'
+    +'<ellipse cx="60" cy="88" rx="28" ry="7" fill="rgba(201,150,42,0.25)"/>'
+    +'<ellipse cx="60" cy="86" rx="20" ry="5" fill="rgba(201,150,42,0.2)"/>'
+    +'</g>'
+    +'<g class="pestle-g">'
+    +'<rect x="56" y="10" width="8" height="55" rx="4" fill="rgba(201,150,42,0.5)" stroke="rgba(201,150,42,0.7)" stroke-width="1"/>'
+    +'<ellipse cx="60" cy="68" rx="9" ry="5" fill="rgba(201,150,42,0.65)" stroke="rgba(201,150,42,0.8)" stroke-width="1"/>'
+    +'<ellipse cx="60" cy="12" rx="6" ry="4" fill="rgba(201,150,42,0.4)"/>'
+    +'</g>'
+    +'<circle class="particle p1" cx="42" cy="74" r="2" fill="rgba(201,150,42,0.7)" style="--dx:-14px;--dy:-18px"/>'
+    +'<circle class="particle p2" cx="78" cy="70" r="1.5" fill="rgba(201,150,42,0.6)" style="--dx:16px;--dy:-22px"/>'
+    +'<circle class="particle p3" cx="50" cy="76" r="1" fill="rgba(201,150,42,0.8)" style="--dx:-8px;--dy:-28px"/>'
+    +'<circle class="particle p4" cx="70" cy="72" r="2" fill="rgba(201,150,42,0.5)" style="--dx:12px;--dy:-16px"/>'
+    +'</svg>'
+    +'</div>'
+    +'<div class="mortar-progress-wrap">'
+    +'<div class="mortar-progress-bar"><div class="mortar-progress-fill"></div></div>'
+    +'<div class="mortar-progress-txt" id="mortar-msg">Consulting 5,000 years of ancient wisdom for you…</div>'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:5px;align-items:center">'
+    +'<div class="sl-d" id="sl-d"></div>'
+    +'<div class="sl-t" id="sl-t"></div>'
+    +'</div></div>';
+}
+
+// Rotate mortar messages so it feels alive
+var MORTAR_MSGS=[
+  'Consulting 5,000 years of ancient wisdom for you…',
+  'Cross-referencing the Charaka Samhita for your exact condition…',
+  'Your personal formula is being ground to perfection…',
+  'Matching your unique constitution to the right herbs…',
+  'Reviewing clinical research so you only get the best…',
+];
+var _mtimer=null;
+function startMortarMsgs(){
+  var i=0;
+  _mtimer=setInterval(function(){
+    i=(i+1)%MORTAR_MSGS.length;
+    var el=document.getElementById('mortar-msg');
+    if(el){el.style.opacity='0';setTimeout(function(){if(el){el.textContent=MORTAR_MSGS[i];el.style.opacity='1';}},300);}
+  },2800);
+}
+function stopMortarMsgs(){if(_mtimer){clearInterval(_mtimer);_mtimer=null;}}
+
+// ── INLINE SVG BOTANICAL ILLUSTRATIONS ───────────────────────────────────────
+// Chrome blocks ALL cross-origin images from file:// — inline SVG is the ONLY
+// solution. Each herb gets a hand-crafted botanical illustration that renders
+// instantly, looks beautiful, and is visually distinctive per ingredient type.
+
+var HERB_CONFIG={
+  // Seeds & Spices (small ovals clustered)
+  ajwain:{bg:'linear-gradient(155deg,#3A2808 0%,#5A3C10 50%,#7A5218 100%)',cat:'seeds',c:'#D8A830'},
+  yavani:{bg:'linear-gradient(155deg,#3A2808 0%,#5A3C10 50%,#7A5218 100%)',cat:'seeds',c:'#D8A830'},
+  jeera:{bg:'linear-gradient(155deg,#2E1C08 0%,#4A3010 50%,#6A4818 100%)',cat:'seeds',c:'#C09040'},
+  cumin:{bg:'linear-gradient(155deg,#2E1C08 0%,#4A3010 50%,#6A4818 100%)',cat:'seeds',c:'#C09040'},
+  cardamom:{bg:'linear-gradient(155deg,#0C2010 0%,#183018 50%,#284830 100%)',cat:'seeds',c:'#70B870'},
+  ela:{bg:'linear-gradient(155deg,#0C2010 0%,#183018 50%,#284830 100%)',cat:'seeds',c:'#70B870'},
+  pippali:{bg:'linear-gradient(155deg,#2A0808 0%,#480E0E 50%,#6A1818 100%)',cat:'seeds',c:'#B04020'},
+  fennel:{bg:'linear-gradient(155deg,#0A2010 0%,#163018 50%,#204830 100%)',cat:'seeds',c:'#60A848'},
+  shatapushpa:{bg:'linear-gradient(155deg,#0A2010 0%,#163018 50%,#204830 100%)',cat:'seeds',c:'#60A848'},
+  // Roots & Rhizomes (knobby organic shapes)
+  ginger:{bg:'linear-gradient(155deg,#3A1808 0%,#5A2C10 50%,#7A4020 100%)',cat:'roots',c:'#E09050'},
+  sunthi:{bg:'linear-gradient(155deg,#3A1808 0%,#5A2C10 50%,#7A4020 100%)',cat:'roots',c:'#E09050'},
+  turmeric:{bg:'linear-gradient(155deg,#5A2800 0%,#8A4800 50%,#B86808 100%)',cat:'roots',c:'#F0B020'},
+  haridra:{bg:'linear-gradient(155deg,#5A2800 0%,#8A4800 50%,#B86808 100%)',cat:'roots',c:'#F0B020'},
+  ashwagandha:{bg:'linear-gradient(155deg,#3C2008 0%,#5C3410 50%,#7C4818 100%)',cat:'roots',c:'#E4A020'},
+  arjuna:{bg:'linear-gradient(155deg,#2A1C08 0%,#402C10 50%,#584018 100%)',cat:'roots',c:'#A08048'},
+  yashtimadhu:{bg:'linear-gradient(155deg,#3A2008 0%,#5A3010 50%,#784018 100%)',cat:'roots',c:'#C09048'},
+  licorice:{bg:'linear-gradient(155deg,#3A2008 0%,#5A3010 50%,#784018 100%)',cat:'roots',c:'#C09048'},
+  jatamansi:{bg:'linear-gradient(155deg,#180E28 0%,#281840 50%,#382460 100%)',cat:'roots',c:'#9080B0'},
+  // Leaves & Plants (overlapping leaf shapes)
+  brahmi:{bg:'linear-gradient(155deg,#0A2010 0%,#183020 50%,#284838 100%)',cat:'leaves',c:'#60C080'},
+  bacopa:{bg:'linear-gradient(155deg,#0A2010 0%,#183020 50%,#284838 100%)',cat:'leaves',c:'#60C080'},
+  tulsi:{bg:'linear-gradient(155deg,#082010 0%,#143018 50%,#1E4828 100%)',cat:'leaves',c:'#50B068'},
+  neem:{bg:'linear-gradient(155deg,#0C1E08 0%,#182E10 50%,#244018 100%)',cat:'leaves',c:'#70A840'},
+  nimba:{bg:'linear-gradient(155deg,#0C1E08 0%,#182E10 50%,#244018 100%)',cat:'leaves',c:'#70A840'},
+  guduchi:{bg:'linear-gradient(155deg,#0A2010 0%,#163018 50%,#204828 100%)',cat:'leaves',c:'#60B860'},
+  giloy:{bg:'linear-gradient(155deg,#0A2010 0%,#163018 50%,#204828 100%)',cat:'leaves',c:'#60B860'},
+  bhringraj:{bg:'linear-gradient(155deg,#101E08 0%,#1A2E10 50%,#244018 100%)',cat:'leaves',c:'#88B838'},
+  moringa:{bg:'linear-gradient(155deg,#0A2010 0%,#143018 50%,#1C4828 100%)',cat:'leaves',c:'#60C068'},
+  shatavari:{bg:'linear-gradient(155deg,#0E2010 0%,#1A3018 50%,#284828 100%)',cat:'leaves',c:'#90D040'},
+  shankhpushpi:{bg:'linear-gradient(155deg,#182030 0%,#243048 50%,#304868 100%)',cat:'flowers',c:'#80A8D8'},
+  manjistha:{bg:'linear-gradient(155deg,#2C1020 0%,#481830 50%,#642040 100%)',cat:'flowers',c:'#C05070'},
+  // Berries & Fruits (round berries on branch)
+  amla:{bg:'linear-gradient(155deg,#203010 0%,#304820 50%,#406030 100%)',cat:'berries',c:'#A0C850'},
+  amalaki:{bg:'linear-gradient(155deg,#203010 0%,#304820 50%,#406030 100%)',cat:'berries',c:'#A0C850'},
+  triphala:{bg:'linear-gradient(155deg,#1E2E10 0%,#2E4418 50%,#3C5820 100%)',cat:'berries',c:'#90A850'},
+  // Flowers & Stamens (petal shapes)
+  saffron:{bg:'linear-gradient(155deg,#3C1010 0%,#601818 50%,#882020 100%)',cat:'flowers',c:'#E86030'},
+  kumkuma:{bg:'linear-gradient(155deg,#3C1010 0%,#601818 50%,#882020 100%)',cat:'flowers',c:'#E86030'},
+  // Resin & Mineral
+  hing:{bg:'linear-gradient(155deg,#3A2E10 0%,#5A4818 50%,#7A6220 100%)',cat:'resin',c:'#D8B840'},
+  asafoetida:{bg:'linear-gradient(155deg,#3A2E10 0%,#5A4818 50%,#7A6220 100%)',cat:'resin',c:'#D8B840'},
+  shilajit:{bg:'linear-gradient(155deg,#181008 0%,#281808 50%,#382210 100%)',cat:'resin',c:'#786040'},
+  // Liquid formulas (wave pattern)
+  saraswatarishta:{bg:'linear-gradient(155deg,#081828 0%,#102238 50%,#183050 100%)',cat:'liquid',c:'#6088B0'},
+  dashamoolarishta:{bg:'linear-gradient(155deg,#102010 0%,#183018 50%,#244028 100%)',cat:'liquid',c:'#608850'},
+};
+var DEFAULT_CFG={bg:'linear-gradient(155deg,#0D1A11 0%,#162A1C 50%,#1E3826 100%)',cat:'leaves',c:'#80A850'};
+
+function getCfg(key){
+  if(!key) return DEFAULT_CFG;
+  var k=(key||'').toLowerCase().trim();
+  if(HERB_CONFIG[k]) return HERB_CONFIG[k];
+  var ks=Object.keys(HERB_CONFIG);
+  for(var i=0;i<ks.length;i++) if(k.indexOf(ks[i])>=0||ks[i].indexOf(k)>=0) return HERB_CONFIG[ks[i]];
+  return DEFAULT_CFG;
+}
+
+// SVG botanical illustration for each category
+function herbSVG(cat, c){
+  var a=c||'#C9962A';
+  var svgs={
+    seeds:'<ellipse cx="42" cy="52" rx="9" ry="5.5" fill="'+a+'" opacity=".75" transform="rotate(-25 42 52)"/>'
+      +'<ellipse cx="62" cy="44" rx="8" ry="5" fill="'+a+'" opacity=".7" transform="rotate(10 62 44)"/>'
+      +'<ellipse cx="78" cy="55" rx="9" ry="5.5" fill="'+a+'" opacity=".72" transform="rotate(30 78 55)"/>'
+      +'<ellipse cx="50" cy="66" rx="8" ry="5" fill="'+a+'" opacity=".65" transform="rotate(-15 50 66)"/>'
+      +'<ellipse cx="70" cy="68" rx="9" ry="5.5" fill="'+a+'" opacity=".68" transform="rotate(20 70 68)"/>'
+      +'<ellipse cx="38" cy="38" rx="7" ry="4" fill="'+a+'" opacity=".45" transform="rotate(-30 38 38)"/>'
+      +'<ellipse cx="82" cy="38" rx="7" ry="4" fill="'+a+'" opacity=".42" transform="rotate(15 82 38)"/>',
+    roots:'<path d="M28 78 Q34 62 50 56 Q62 52 68 40 Q74 28 84 32" stroke="'+a+'" stroke-width="8" fill="none" stroke-linecap="round" opacity=".7"/>'
+      +'<path d="M50 56 Q44 44 47 32" stroke="'+a+'" stroke-width="6" fill="none" stroke-linecap="round" opacity=".58"/>'
+      +'<path d="M68 40 Q78 52 80 66" stroke="'+a+'" stroke-width="5" fill="none" stroke-linecap="round" opacity=".52"/>'
+      +'<circle cx="28" cy="78" r="5.5" fill="'+a+'" opacity=".65"/>'
+      +'<circle cx="84" cy="32" r="4.5" fill="'+a+'" opacity=".58"/>'
+      +'<circle cx="47" cy="32" r="4" fill="'+a+'" opacity=".48"/>'
+      +'<circle cx="80" cy="66" r="3.5" fill="'+a+'" opacity=".45"/>',
+    leaves:'<path d="M60 82 Q38 66 33 44 Q32 28 48 33 Q58 38 60 82Z" fill="'+a+'" opacity=".52"/>'
+      +'<path d="M60 82 Q78 62 85 40 Q88 24 72 29 Q62 35 60 82Z" fill="'+a+'" opacity=".62"/>'
+      +'<path d="M60 82 Q60 58 60 38 Q60 24 66 22 Q72 20 69 34 Q65 52 60 82Z" fill="'+a+'" opacity=".4"/>'
+      +'<line x1="60" y1="82" x2="41" y2="41" stroke="'+a+'" stroke-width="1.2" opacity=".35"/>'
+      +'<line x1="60" y1="82" x2="80" y2="42" stroke="'+a+'" stroke-width="1.2" opacity=".35"/>',
+    berries:'<line x1="60" y1="84" x2="60" y2="58" stroke="'+a+'" stroke-width="2.5" opacity=".5"/>'
+      +'<line x1="60" y1="66" x2="40" y2="54" stroke="'+a+'" stroke-width="2" opacity=".45"/>'
+      +'<line x1="60" y1="62" x2="80" y2="52" stroke="'+a+'" stroke-width="2" opacity=".45"/>'
+      +'<circle cx="60" cy="42" r="14" fill="'+a+'" opacity=".72"/>'
+      +'<circle cx="40" cy="43" r="12" fill="'+a+'" opacity=".62"/>'
+      +'<circle cx="80" cy="41" r="12" fill="'+a+'" opacity=".67"/>'
+      +'<circle cx="59" cy="38" r="3.5" fill="rgba(255,255,255,0.28)"/>'
+      +'<circle cx="39" cy="39" r="3" fill="rgba(255,255,255,0.22)"/>'
+      +'<circle cx="79" cy="37" r="3" fill="rgba(255,255,255,0.22)"/>',
+    flowers:'<path d="M48 78 Q46 60 43 44 Q41 30 46 22" stroke="'+a+'" stroke-width="3" fill="none" stroke-linecap="round" opacity=".78"/>'
+      +'<path d="M60 78 Q60 58 60 42 Q60 28 60 20" stroke="'+a+'" stroke-width="3" fill="none" stroke-linecap="round" opacity=".82"/>'
+      +'<path d="M72 78 Q74 60 77 44 Q79 30 74 22" stroke="'+a+'" stroke-width="3" fill="none" stroke-linecap="round" opacity=".78"/>'
+      +'<circle cx="60" cy="18" r="5" fill="'+a+'" opacity=".9"/>'
+      +'<circle cx="43" cy="20" r="4" fill="'+a+'" opacity=".8"/>'
+      +'<circle cx="77" cy="20" r="4" fill="'+a+'" opacity=".8"/>'
+      +'<path d="M43 22 Q40 14 37 12 Q35 10 38 12" stroke="'+a+'" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/>'
+      +'<path d="M77 22 Q80 14 82 12 Q84 10 81 12" stroke="'+a+'" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".7"/>',
+    resin:'<path d="M45 75 L40 55 L50 42 L62 40 L72 50 L70 68 Z" fill="'+a+'" opacity=".55"/>'
+      +'<path d="M55 70 L52 54 L60 44 L68 48 L66 64 Z" fill="'+a+'" opacity=".65"/>'
+      +'<path d="M62 72 L60 60 L66 52 L72 56 L70 68 Z" fill="'+a+'" opacity=".5"/>'
+      +'<line x1="45" y1="55" x2="52" y2="54" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>'
+      +'<line x1="50" y1="42" x2="60" y2="44" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>',
+    liquid:'<path d="M22 62 Q32 52 44 62 Q56 72 68 62 Q80 52 92 62" stroke="'+a+'" stroke-width="3" fill="none" stroke-linecap="round" opacity=".72"/>'
+      +'<path d="M18 72 Q30 62 44 72 Q56 80 68 72 Q80 64 94 72" stroke="'+a+'" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".55"/>'
+      +'<path d="M22 52 Q34 44 46 52 Q58 60 70 52 Q80 44 92 52" stroke="'+a+'" stroke-width="2" fill="none" stroke-linecap="round" opacity=".45"/>'
+      +'<circle cx="60" cy="34" r="10" fill="'+a+'" opacity=".38"/>'
+      +'<path d="M56 28 Q60 20 64 28" stroke="'+a+'" stroke-width="2" fill="none" opacity=".5" stroke-linecap="round"/>'
+  };
+  return svgs[cat]||svgs.leaves;
+}
+
+function herbArtDiv(herbKey, className){
+  var cfg=getCfg(herbKey);
+  var svgContent=herbSVG(cfg.cat, cfg.c);
+  // Subtle light reflection at top
+  var shine='<ellipse cx="50" cy="30" rx="40" ry="22" fill="rgba(255,255,255,0.04)"/>';
+  return '<div class="'+className+'" style="position:absolute;inset:0;background:'+cfg.bg+';overflow:hidden">'
+    +'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" style="position:absolute;inset:0;width:100%;height:65%;top:0;left:0;opacity:0.88">'
+    +shine+svgContent
+    +'</svg>'
+    +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 60% 20%,rgba(255,255,255,.04) 0%,transparent 55%)"></div>'
+    +'</div>';
+}
+
+// ── GRADIENTS (kept for strip tile CSS classes) ────────────────────────────────
+var GR=['g0','g1','g2','g3'];
+var DC={'Vata':'#8B6014','Pitta':'#B84020','Kapha':'#1D6040','Vata-Pitta':'#9A5018','Pitta-Kapha':'#4A7030','Vata-Kapha':'#6A5520'};
+// ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
+function buildSP(){
+  var p='';
+  if(_user&&_user.name){
+    p='\n\nUSER PROFILE: Name:'+_user.name+(_user.age?', Age:'+_user.age:'')+(_user.sex?', Sex:'+_user.sex:'')+(_user.focus?', Focus:'+_user.focus:'')+(_user.dosha?', Dosha:'+_user.dosha:'')+(_user.conditions?', Conditions/allergies:'+_user.conditions:'')+(_user.report?', Medical report context:'+_user.report.substring(0,300):'')+'. Address by first name in greeting. Tailor every remedy precisely to this profile. Flag any herb contraindications for their conditions.';
+  }
+  return 'You are ANANDA — Ayurvedic oracle trained on Charaka Samhita (c.600BCE), Sushruta Samhita, Ashtanga Hridayam (c.7thCE), Bhavaprakasha Nighantu, AIIMS/CSIR research.'+p+'\n\nRESPOND ONLY VALID JSON (no markdown, no backticks):\n{"greeting":"1-2 sentence warm poetic greeting in the voice of a wise Vaidya. Address by name if known.","dosha":"Vata|Pitta|Kapha|Vata-Pitta|Pitta-Kapha|Vata-Kapha","dosha_insight":"One sentence: vitiated dosha + classical signs observed","remedies":[{"name":"English/Ayurvedic name","sanskrit":"Devanagari","romanSanskrit":"IAST","tagline":"4-6 word poetic descriptor","herbKey":"single lowercase keyword e.g. ashwagandha","emoji":"single emoji representing herb","primary_benefit":"1-2 sentences: exactly how this addresses described symptoms","description":"2-3 sentences: rasa/guna/virya/vipaka, classical text reference with verse, modern AIIMS/CSIR validation","how_to_use":"Precise form, dosage, timing, anupana vehicle","timeline_weeks":"e.g. 7-10 days or 2-3 weeks","timeline_headline":"4-6 word poetic headline for timeline stage e.g. First Relief Arrives","caution":"Brief contraindication checking against user conditions, or null","testimonial":{"text":"Specific 1-2 sentence first-person review with dose and timeline","author":"Realistic Indian or Western name","location":"Real city"},"products":[{"brand":"Brand name e.g. Organic India","product":"Product name e.g. Ashwagandha 500mg 90 Capsules","why":"Why top-rated: purity, testing, reviews, manufacturer trust — 1 sentence","search":"Amazon search string e.g. Organic India Ashwagandha 500mg capsules"},{"brand":"Second brand","product":"Product name","why":"Why recommended","search":"Amazon search"},{"brand":"Third brand","product":"Product name","why":"Why recommended","search":"Amazon search"}]}]}\nReturn exactly 4 remedies. Be clinically precise, include specific classical verse references, and verify product recommendations are real trusted brands.';
+}
+
+// ── SEEK ──────────────────────────────────────────────────────────────────────
+async function seekRemedy(){
+  var input=document.getElementById('sym').value.trim();
+  if(!input)return;
+  if(!_sbSession){
+    var cnt=await _sb.from('searches').select('*',{count:'exact',head:true}).eq('session_id',_sessionId);
+    if((cnt.count||0)>=FREE_N){_ps=true;openM('auth-modal');return;}
+  }
+  _query=input;
+  document.getElementById('tb-q').textContent='"'+input+'"';
+  rname();
+  document.getElementById('rpc').innerHTML=loaderHtml();
+  document.body.className='results-mode';
+  document.getElementById('results-page').scrollTop=0;
+  _expanded=true;
+  startSh();showSh();startMortarMsgs();
+  var btn=document.getElementById('seek-btn');
+  if(btn){btn.disabled=true;btn.textContent='Consulting…';}
+  try{
+    // Build auth headers
+    var headers={'Content-Type':'application/json','apikey':SUPABASE_ANON};
+    if(_sbSession)headers['Authorization']='Bearer '+_sbSession.access_token;
+    var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'search',query:input,session_id:_sessionId,user_profile:_user||null})});
+    var parsed=await res.json();
+    if(parsed.error==='free_limit_reached'){stopSh();stopMortarMsgs();if(_sbSession){openM('paywall-modal');}else{_ps=true;openM('auth-modal');}if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}return;}
+    _herbs=parsed.remedies||[];
+    _searchId=parsed.search_id||null;
+    stopSh();stopMortarMsgs();renderResults(parsed);
+  }catch(e){
+    stopSh();stopMortarMsgs();
+    document.getElementById('rpc').innerHTML='<div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center"><div style="font-size:36px;opacity:.2">✦</div><div style="font-family:Cormorant Garamond,serif;font-size:22px;color:var(--amber)">The oracle went quiet</div><div style="font-size:12px;color:var(--muted)">Please try again in a moment.</div></div>';
+  }
+  if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}
+}
+
+// ── RENDER RESULTS ────────────────────────────────────────────────────────────
+function stripTiles(){
+  return _herbs.map(function(r,i){
+    var tl=r.timeline_weeks||'';
+    return '<div class="hs-tile">'
+      +herbArtDiv(r.herbKey||r.name,'hs-art')
+      +'<div class="hs-overlay"></div>'
+      +(tl?'<div class="hs-badge"><div class="hs-badge-top">Feel results in</div><div class="hs-badge-val">~'+tl+'</div></div>':'')
+      +'<div class="hs-content">'
+      +'<div class="hs-skt">'+(r.sanskrit||r.name)+'</div>'
+      +'<div class="hs-roman">'+(r.romanSanskrit||'')+'</div>'
+      +'<div class="hs-eng">'+r.name+'</div>'
+      +'<div class="hs-tag">'+(r.tagline||'')+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function fullCards(){
+  return _herbs.map(function(r,i){
+    var caution=r.caution?'<div class="hf-caution">⚠ '+r.caution+'</div>':'';
+    var t=r.testimonial||{};
+    var rev=t.text?'<div class="hf-review"><div class="hf-stars">★★★★★</div><div class="hf-review-t">"'+t.text+'"</div><div class="hf-review-a">'+(t.author||'')+(t.location?' · '+t.location:'')+'</div></div>':'';
+    var tl=r.timeline_weeks||'';
+    var prods='';
+    if(r.products&&r.products.length){
+      prods='<div class="hf-picks-lbl">✦ ĀNANDA Top 3 Picks</div>';
+      prods+=r.products.slice(0,3).map(function(p){
+        var amzUrl='https://www.amazon.com/s?k='+encodeURIComponent(p.search||p.product+' '+p.brand)+'&tag=lifeeconomy-20';
+        return '<div class="hf-pick"><div class="hf-pick-brand">'+p.brand+'</div><div class="hf-pick-name">'+p.product+'</div><div class="hf-pick-why">'+p.why+'</div><a class="hf-pick-buy" href="'+amzUrl+'" target="_blank" rel="noopener" data-herb="'+r.name+'" data-prod="'+p.product+'" data-brand="'+p.brand+'" onclick="var el=this;trackClick(el.dataset.herb,el.dataset.prod,el.dataset.brand,el.href);">🛒 Buy on Amazon →</a></div>';
+      }).join('');
+    }
+    return '<div class="hf">'
+      +'<div class="hf-photo" style="position:relative;overflow:hidden">'
+      +herbArtDiv(r.herbKey||r.name,'hf-art')
+      +'<div class="hf-ov"></div>'
+      +(tl?'<div class="hf-badge">Feel results in ~'+tl+'</div>':'')
+      +'<div class="hf-skt-w"><div class="hf-skt">'+(r.sanskrit||r.name)+'</div><div class="hf-roman">'+(r.romanSanskrit||'')+'</div></div></div>'
+      +'<div class="hf-body"><div class="hf-name">'+r.name+'</div><div class="hf-tag">'+(r.tagline||'')+'</div>'
+      +'<div class="hf-ben">'+r.primary_benefit+'</div>'
+      +'<div class="hf-desc">'+r.description+'</div>'
+      +'<div class="hf-how"><div class="hf-how-l">How to Take</div><div class="hf-how-t">'+r.how_to_use+'</div></div>'
+      +caution+rev+prods
+      +'</div></div>';
+  }).join('');
+}
+
+function shopAll4(){
+  // Chrome blocks window.open for calls 2-4 from file://
+  // Best UX: show a compact overlay with 4 big Amazon links to click
+  var existing=document.getElementById('shop4-overlay');
+  if(existing){existing.remove();return;}
+  var links=_herbs.map(function(r){
+    var top=r.products&&r.products[0];
+    var url=top?'https://www.amazon.com/s?k='+encodeURIComponent(top.search)+'&tag=lifeeconomy-20':'https://www.amazon.com/s?k='+encodeURIComponent(r.name+' ayurvedic')+'&tag=lifeeconomy-20';
+    return '<a href="'+url+'" target="_blank" rel="noopener" onclick="closeShop4()" style="display:flex;align-items:center;justify-content:space-between;background:#FF9900;color:#232F3E;text-decoration:none;padding:11px 16px;border-radius:5px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;transition:background .15s" onmouseover="this.style.background=\'#e68a00\'" onmouseout="this.style.background=\'#FF9900\'">'
+      +'<span>'+r.name+' <span style="font-weight:400;opacity:.65">· '+(top?top.brand:'Best brand')+'</span></span>'
+      +'<span>Shop →</span>'
+      +'</a>';
+  }).join('');
+  var overlay=document.createElement('div');
+  overlay.id='shop4-overlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(13,26,17,.82);z-index:300;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)';
+  overlay.innerHTML='<div style="background:#F5F0E8;border-radius:10px;padding:28px 28px 24px;max-width:440px;width:90%;box-shadow:0 32px 80px rgba(0,0,0,.35)">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">'
+    +'<div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:400;color:#241E13">Your 4 herbs on Amazon</div>'
+    +'<button onclick="closeShop4()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#8A7A62;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%">✕</button>'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:9px">'+links+'</div>'
+    +'<div style="font-size:9.5px;color:#8A7A62;text-align:center;margin-top:14px;letter-spacing:.04em">Each link opens Amazon with your best-matched product. Your affiliate tag is attached.</div>'
+    +'</div>';
+  document.body.appendChild(overlay);
+}
+function closeShop4(){var o=document.getElementById('shop4-overlay');if(o)o.remove();}
+
+function kitSection(){
+  if(!_herbs.length)return '';
+  var herbItems=_herbs.map(function(r){
+    var top=r.products&&r.products[0];
+    var amzUrl=top?'https://www.amazon.com/s?k='+encodeURIComponent(top.search)+'&tag=lifeeconomy-20':'https://www.amazon.com/s?k='+encodeURIComponent(r.name+' ayurvedic')+'&tag=lifeeconomy-20';
+    return '<div class="kit-herb"><div class="kit-herb-name">'+r.name+'</div><div class="kit-herb-prod">'+(top?top.brand:'Best Quality')+'</div><a class="kit-herb-btn" href="'+amzUrl+'" target="_blank" rel="noopener">🛒 Buy</a></div>';
+  }).join('');
+  return '<div class="kit-bar">'
+    +'<div class="kit-bar-top">'
+    +'<div class="kit-bar-txt"><div class="kit-bar-title">🛒 Your Complete Ayurvedic Kit</div><div class="kit-bar-sub">Curated for purity, third-party testing &amp; brand trust. Opens a separate tab for each herb so you can add them to cart individually.</div></div>'
+    +'<button class="kit-buy-all" onclick="shopAll4()">Open All 4 on Amazon ✦</button>'
+    +'</div>'
+    +'<div class="kit-herbs">'+herbItems+'</div>'
+    +'</div>';
+}
+
+function toggleExpand(){
+  _expanded=!_expanded;
+  var s=document.getElementById('hs-strip'),f=document.getElementById('hs-full'),b=document.getElementById('vt-btn');
+  if(_expanded){s.style.display='none';f.style.display='grid';b.classList.add('exp');b.querySelector('.vt-txt').textContent='Show compact view';}
+  else{s.style.display='grid';f.style.display='none';b.classList.remove('exp');b.querySelector('.vt-txt').textContent='See full ingredient details';}
+}
+
+function renderResults(data){
+  var dosha=data.dosha||'Vata',color=DC[dosha]||'#8B6014';
+  var showSign=(_cnt===1&&!_user);
+  var protoCTA=_user
+    ?buildProtoCTA()
+    :'<div class="signin-tease"><div><div class="st-t">✦ Want your personal protocol?</div><div class="st-s" style="margin-top:2px">Sign in free — get exact dosing, daily schedule, timeline &amp; scientific references tailored to you.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>';
+
+  document.getElementById('rpc').innerHTML=
+    '<div class="rp">'
+    +'<div class="rp-greet">"'+data.greeting+'"</div>'
+    +'<div class="rp-div"></div>'
+    +'<div class="rp-dosha"><div><div class="rp-dl">Imbalanced Dosha</div><div class="rp-dn" style="color:'+color+'">'+dosha+'</div></div><div class="rp-ds"></div><div class="rp-di">'+data.dosha_insight+'</div></div>'
+    +'<div class="view-toggle"><div class="vt-lbl">Your 4 recommended remedies</div><div class="vt-sp"></div>'
+    +'<button class="vt-btn exp" id="vt-btn" onclick="toggleExpand()"><span class="vt-ic">▲</span><span class="vt-txt">Show compact view</span></button></div>'
+    +'<div class="herb-strip" id="hs-strip" style="display:none">'+stripTiles()+'</div>'
+    +'<div class="cards-grid" id="hs-full">'+fullCards()+'</div>'
+    +kitSection()
+    +protoCTA
+    +(showSign?'<div class="signin-tease" style="margin-top:12px"><div><div class="st-t">Enjoying ĀNANDA?</div><div class="st-s" style="margin-top:2px">Sign in for unlimited searches &amp; personalized guidance.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>':'')
+    +'<div id="proto-sec"></div>'
+    +'</div>';
+
+  // Auto-collapse full cards when user scrolls past them (Issue 4)
+  setTimeout(function(){
+    var fullGrid=document.getElementById('hs-full');
+    if(!fullGrid||!window.IntersectionObserver)return;
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(!entry.isIntersecting&&_expanded&&entry.boundingClientRect.top<0){
+          // Scrolled past — collapse to strip
+          var s=document.getElementById('hs-strip'),b=document.getElementById('vt-btn');
+          if(s&&b){_expanded=false;fullGrid.style.display='none';s.style.display='grid';b.classList.remove('exp');b.querySelector('.vt-txt').textContent='See full ingredient details';}
+        }
+      });
+    },{threshold:0,rootMargin:'0px 0px -80% 0px'});
+    obs.observe(fullGrid);
+  },500);
+}
+
+// ── PROTOCOL ──────────────────────────────────────────────────────────────────
+async function generateProtocol(){
+  if(!_user){_pp=true;openM('auth-modal');return;}
+  var cta=document.getElementById('proto-cta');if(cta)cta.style.display='none';
+  var ps=document.getElementById('proto-sec');
+  ps.innerHTML='<div class="proto-loading"><div class="proto-spin"></div><div class="proto-loading-t">Composing your personal protocol…</div></div>';
+  ps.classList.add('on');
+  setTimeout(function(){ps.scrollIntoView({behavior:'smooth',block:'start'});},200);
+  var names=_herbs.map(function(r){return r.name+(r.sanskrit?' ('+r.sanskrit+')':'');}).join(', ');
+  var uctx='Name:'+_user.name+(_user.age?', age '+_user.age:'')+(_user.sex?', '+_user.sex:'')+(_user.focus?', focus: '+_user.focus:'')+(_user.dosha?', dosha: '+_user.dosha:'')+(_user.conditions?', conditions: '+_user.conditions:'')+(_user.report?', report: '+_user.report.substring(0,200):'');
+  var sp='You are ANANDA — expert Ayurvedic physician. Generate a precise personal protocol. RESPOND ONLY VALID JSON (no markdown):\n{"summary":"2-3 sentence synthesis for this specific person","combination":"Take All Together|Prioritize Two|Sequential Rotation","combination_verdict":"One clear plain-English sentence — should they take all 4 or which to prioritize and why","rationale":"2-3 sentences: classical synergy and safety","synergies":"How these herbs potentiate each other classically and biochemically","schedule":[{"time":"Morning","time_sub":"Empty stomach · 6–8am","css_class":"sc-morning","icon":"🌅","herbs":[{"herb":"Name","dose":"exact e.g. 1 tsp or 500mg","anupana":"with warm water","instruction":"note"}]},{"time":"Afternoon","time_sub":"After lunch · 12–2pm","css_class":"sc-afternoon","icon":"☀️","herbs":[]},{"time":"Evening","time_sub":"With dinner · 6–8pm","css_class":"sc-evening","icon":"🌆","herbs":[]},{"time":"Night","time_sub":"Before sleep · 9–10pm","css_class":"sc-night","icon":"🌙","herbs":[]}],"timeline":[{"period":"Days 1–7","emoji":"🌱","headline":"First Signs of Relief","expectation":"Be specific and honest — what will change in the first week"},{"period":"Weeks 2–4","emoji":"🌿","headline":"Transformation Deepens","expectation":"Specific week 2-4 changes the person will notice"},{"period":"Month 2–3","emoji":"🌳","headline":"Deep Healing Complete","expectation":"Full therapeutic benefits achieved — specific and inspiring"}],"papers":[{"title":"Full paper title","authors":"First author et al.","journal":"Journal","year":"year","doi":"DOI or PMID","key_finding":"One specific sentence relevant to this person\'s condition"}]}';
+  try{
+    var headers={'Content-Type':'application/json','apikey':SUPABASE_ANON,'Authorization':'Bearer '+_sbSession.access_token};
+    var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'protocol',query:_query,session_id:_sessionId,user_profile:_user,herbs:_herbs,search_id:_searchId||null})});
+    var proto=await res.json();
+    renderProtocol(proto);
+  }catch(e){
+    ps.innerHTML='<div style="padding:28px;text-align:center;color:var(--amber)">Could not generate protocol. Please try again.</div>';
+  }
+}
+
+function renderProtocol(p){
+  var ps=document.getElementById('proto-sec');
+  var TMAP={'Morning':'sc-morning','Afternoon':'sc-afternoon','Evening':'sc-evening','Night':'sc-night'};
+
+  var sched=(p.schedule||[]).map(function(s,si){
+    var cls=TMAP[s.time]||s.css_class||'sc-morning';
+    var hasHerbs=(s.herbs||[]).length>0;
+    var herbs=hasHerbs
+      ?s.herbs.map(function(h){
+          var r=_herbs.find(function(x){return x.name.toLowerCase().indexOf(h.herb.toLowerCase())>=0||h.herb.toLowerCase().indexOf(x.name.toLowerCase())>=0;});
+          var amzUrl=r&&r.products&&r.products[0]?'https://www.amazon.com/s?k='+encodeURIComponent(r.products[0].search)+'&tag=lifeeconomy-20':'https://www.amazon.com/s?k='+encodeURIComponent(h.herb+' ayurvedic')+'&tag=lifeeconomy-20';
+          return '<div class="sc-herb">'
+            +'<div class="sc-hname">'+h.herb+'</div>'
+            +'<div class="sc-hdose">'+h.dose+'</div>'
+            +'<div class="sc-hanu">'+h.anupana+'</div>'
+            +'<a href="'+amzUrl+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;background:#FF9900;color:#232F3E;text-decoration:none;padding:5px 11px;border-radius:3px;font-size:9.5px;font-weight:700;margin-top:6px;transition:background .15s" onmouseover="this.style.background=\'#e68a00\'" onmouseout="this.style.background=\'#FF9900\'">🛒 Buy</a>'
+            +'</div>';
+        }).join('')
+      :'<div class="sc-rest">Rest period — let the herbs do their work</div>';
+    return '<div class="sc-card '+cls+'"><div class="sc-hdr" data-icon="'+(s.icon||'')+'"><div class="sc-time-name">'+(s.icon||'')+' '+s.time+'</div><div class="sc-time-sub">'+(s.time_sub||'')+'</div></div><div class="sc-herbs">'+herbs+'</div></div>';
+  }).join('');
+
+  var TL_CLASSES=['tl-card-1','tl-card-2','tl-card-3'];
+  var tl=(p.timeline||[]).map(function(t,i){
+    return '<div class="tl-card '+TL_CLASSES[i]+'">'
+      +'<div class="tl-card-hdr">'
+      +'<span class="tl-card-emoji">'+(t.emoji||'🌱')+'</span>'
+      +'<div class="tl-card-num">'+(i+1)+'</div>'
+      +'<div class="tl-card-period">'+t.period+'</div>'
+      +'<div class="tl-card-headline">'+(t.headline||t.period)+'</div>'
+      +'</div>'
+      +'<div class="tl-card-body"><div class="tl-card-text">'+t.expectation+'</div></div>'
+      +'</div>';
+  }).join('');
+
+  var papers=(p.papers||[]).map(function(paper,i){
+    var doi=paper.doi?'<a class="paper-doi" href="https://pubmed.ncbi.nlm.nih.gov/?term='+encodeURIComponent(paper.doi)+'" target="_blank" rel="noopener">'+paper.doi+' ↗</a>':'';
+    return '<div class="paper-row"><div class="paper-n">'+(i+1)+'</div><div><div class="paper-t">'+paper.title+'</div><div class="paper-m">'+paper.authors+' · '+paper.journal+' · '+paper.year+'</div><div class="paper-f">'+paper.key_finding+'</div>'+doi+'</div></div>';
+  }).join('');
+
+  // ONE unified dark card for verdict + schedule + timeline
+  ps.innerHTML=
+    '<div style="height:1px;background:var(--linen);margin-bottom:24px"></div>'
+    // Big unified protocol card
+    +'<div style="background:var(--forest);border-radius:10px;overflow:hidden;border:1px solid rgba(201,150,42,.16);margin-bottom:24px">'
+    // Header
+    +'<div style="padding:26px 30px 20px;position:relative;overflow:hidden">'
+    +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(201,150,42,.08) 0%,transparent 60%);pointer-events:none"></div>'
+    +'<div style="font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:6px;opacity:.7">Your Personal ĀNANDA Protocol · '+(_user?_user.name:'')+'</div>'
+    +'<div style="font-family:Cormorant Garamond,serif;font-size:30px;font-weight:400;color:var(--parchment);margin-bottom:5px">'+(p.combination||'Take All Together')+'</div>'
+    +'<div style="font-size:13px;color:rgba(232,212,160,.52);line-height:1.65;max-width:680px">'+(p.combination_verdict||'')+'</div>'
+    +(p.synergies?'<div style="font-size:11.5px;color:rgba(232,212,160,.36);line-height:1.7;margin-top:10px;padding-top:10px;border-top:1px solid rgba(201,150,42,.1)">'+p.synergies+'</div>':'')
+    +'</div>'
+    // Schedule inside the same card
+    +'<div style="padding:0 20px 24px">'
+    +'<div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:12px;padding-top:4px;display:flex;align-items:center;gap:10px">Daily Dosing Schedule — What to take &amp; when<div style="flex:1;height:1px;background:rgba(201,150,42,.2)"></div></div>'
+    +'<div class="sched-grid">'+sched+'</div>'
+    +'</div>'
+    +'</div>'
+    // Timeline
+    +'<div class="sec-lbl">When will you feel the difference?</div>'
+    +'<div class="tl-grid">'+tl+'</div>'
+    // Papers — muted
+    +'<div class="sec-lbl">Scientific Research</div>'
+    +'<div class="papers-wrap">'+papers+'</div>';
+
+  ps.classList.add('on');
+  setTimeout(function(){
+    ps.scrollIntoView({behavior:'smooth',block:'start'});
+    // Auto-collapse the expanded herb cards — protocol is the focus now
+    var full=document.getElementById('hs-full');
+    var strip=document.getElementById('hs-strip');
+    var btn=document.getElementById('vt-btn');
+    if(full&&strip&&btn&&_expanded){
+      _expanded=false;
+      full.style.transition='opacity .4s';
+      full.style.opacity='0';
+      setTimeout(function(){
+        full.style.display='none';
+        full.style.opacity='1';
+        strip.style.display='grid';
+        btn.classList.remove('exp');
+        var txt=btn.querySelector('.vt-txt');
+        if(txt)txt.textContent='See full ingredient details';
+      },400);
+    }
+  },100);
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function goHome(){
+  document.body.className='home-mode';
+  _herbs=[];_query='';_expanded=false;
+  var b=document.getElementById('seek-btn');if(b){b.disabled=false;b.textContent='Seek your remedy';}
+}
+function go(t){document.getElementById('sym').value=t;seekRemedy();}
+document.getElementById('sym').addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))seekRemedy();});
+
+// ── STRIPE PAYWALL ────────────────────────────────────────────────────────────
+var _selectedPlan='monthly';
+
+function selectPlan(plan){
+  _selectedPlan=plan;
+  var m=document.getElementById('plan-monthly'),a=document.getElementById('plan-annual'),b=document.getElementById('stripe-btn');
+  var gold='2px solid var(--gold)',grey='1.5px solid var(--linen)',goldBg='rgba(201,150,42,.06)';
+  if(plan==='monthly'){
+    m.style.border=gold;m.style.background=goldBg;
+    a.style.border=grey;a.style.background='transparent';
+    if(b)b.textContent='Continue with Monthly — $9.99 →';
+  }else{
+    a.style.border=gold;a.style.background=goldBg;
+    m.style.border=grey;m.style.background='transparent';
+    if(b)b.textContent='Continue with Annual — $79.99/yr →';
+  }
+}
+
+async function startCheckout(){
+  if(!_sbSession){openM('auth-modal');return;}
+  var btn=document.getElementById('stripe-btn');
+  if(btn){btn.textContent='Redirecting to Stripe…';btn.disabled=true;}
+  try{
+    var headers={'Content-Type':'application/json','apikey':SUPABASE_ANON,'Authorization':'Bearer '+_sbSession.access_token};
+    var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'create_checkout',plan:_selectedPlan,success_url:window.location.origin+window.location.pathname+'?subscribed=true',cancel_url:window.location.href})});
+    var data=await res.json();
+    if(data.url){window.location.href=data.url;}
+    else{throw new Error('No checkout URL');}
+  }catch(e){
+    if(btn){btn.textContent='Continue →';btn.disabled=false;}
+    alert('Could not start checkout. Please try again.');
+  }
+}
+
+// Check for ?subscribed=true on page load (Stripe redirect)
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  if(params.get('subscribed')==='true'){
+    setTimeout(function(){
+      alert('🎉 Welcome to ĀNANDA! Your subscription is active. Enjoy unlimited searches.');
+      // Clean URL
+      history.replaceState({},'',window.location.pathname);
+    },1500);
+  }
+})();
+</script>
+<!-- PAYWALL MODAL -->
+<div class="mbd" id="paywall-modal">
+  <div class="mbox" style="max-width:420px">
+    <div class="m-om" style="font-size:20px">✦</div>
+    <div class="m-tit">You've used your 3 free searches</div>
+    <div class="m-sub">Join ĀNANDA to unlock unlimited searches, your personal protocol, saved history &amp; more.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <!-- Monthly -->
+      <div id="plan-monthly" onclick="selectPlan('monthly')" style="border:2px solid var(--gold);border-radius:6px;padding:16px 14px;cursor:pointer;text-align:center;background:rgba(201,150,42,.06)">
+        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px">Monthly</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--ink)">$9<span style="font-size:14px">.99</span></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">per month</div>
+      </div>
+      <!-- Annual -->
+      <div id="plan-annual" onclick="selectPlan('annual')" style="border:1.5px solid var(--linen);border-radius:6px;padding:16px 14px;cursor:pointer;text-align:center;position:relative">
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--forest);color:var(--gold);font-size:8.5px;font-weight:600;letter-spacing:.1em;padding:3px 10px;border-radius:20px;white-space:nowrap">SAVE 33%</div>
+        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px">Annual</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--ink)">$6<span style="font-size:14px">.67</span></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">per month · $79.99/yr</div>
+      </div>
+    </div>
+    <div style="background:var(--cream);border-radius:4px;padding:11px 14px;margin-bottom:14px">
+      <div style="font-size:10px;color:var(--ink);line-height:1.8">
+        ✓ Unlimited Ayurvedic searches<br>
+        ✓ Full personal protocol &amp; daily schedule<br>
+        ✓ Saved history &amp; health profile<br>
+        ✓ ĀNANDA Top 3 curated product picks<br>
+        ✓ Scientific research behind every remedy
+      </div>
+    </div>
+    <button id="stripe-btn" class="m-sb" onclick="startCheckout()" style="font-size:12px;padding:13px;background:var(--gold);color:var(--forest);font-weight:700">
+      Continue with Monthly — $9.99 →
+    </button>
+    <div style="font-size:8.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;opacity:.55">
+      Secured by Stripe · Cancel anytime · No hidden fees
+    </div>
+    <button onclick="closeM('paywall-modal')" style="display:block;width:100%;margin-top:8px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted);text-align:center;padding:6px">Maybe later</button>
+  </div>
+</div>
+
+</body>
+</html>
