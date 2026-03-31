@@ -426,7 +426,7 @@ var _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 var _sessionId=localStorage.getItem('ananda_sid')||(function(){var id='sess_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('ananda_sid',id);return id;})();
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-var _user=null,_sbSession=null,_ps=false,_pp=false,_herbs=[],_query='',_searchId=null,_expanded=true,FREE_N=3;
+var _user=null,_sbSession=null,_ps=false,_pp=false,_herbs=[],_query='',_searchId=null,_expanded=true,FREE_N=3,_cnt=0;
 
 // Init — restore session
 (async function(){
@@ -757,6 +757,7 @@ async function seekRemedy(){
     if(parsed.error==='free_limit_reached'){stopSh();stopMortarMsgs();if(_sbSession){openM('paywall-modal');}else{_ps=true;openM('auth-modal');}if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}return;}
     _herbs=parsed.remedies||[];
     _searchId=parsed.search_id||null;
+    _cnt++;
     stopSh();stopMortarMsgs();renderResults(parsed);
   }catch(e){
     stopSh();stopMortarMsgs();
