@@ -183,14 +183,7 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .hf-review-t{font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:var(--ink);line-height:1.65;margin-bottom:4px}
 .hf-review-a{font-size:9px;color:var(--muted)}
 
-/* Top 3 Product Picks */
-.hf-picks-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);font-weight:600;margin-bottom:8px;margin-top:4px}
-.hf-pick{background:rgba(13,26,17,.04);border:1px solid rgba(13,26,17,.08);border-radius:4px;padding:8px 10px;margin-bottom:6px;display:flex;flex-direction:column;gap:2px}
-.hf-pick-brand{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600}
-.hf-pick-name{font-size:11px;font-weight:500;color:var(--ink);line-height:1.3}
-.hf-pick-why{font-size:9.5px;color:var(--muted);line-height:1.5}
-.hf-pick-buy{display:inline-flex;align-items:center;gap:5px;background:var(--amazon);color:#232F3E;text-decoration:none;padding:6px 12px;border-radius:3px;font-size:9.5px;font-weight:600;margin-top:4px;transition:background .2s}
-.hf-pick-buy:hover{background:#e68a00}
+/* Top 3 Product Picks — replaced by plus icon panel */
 
 /* ══ BUY ALL 4 KIT ══════════════════════════════ */
 .kit-bar{background:var(--forest);border-radius:8px;padding:20px 26px;margin-top:18px;border:1px solid rgba(201,150,42,.2);position:relative;overflow:hidden}
@@ -795,13 +788,16 @@ async function seekRemedy(){
     var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'search',query:input,session_id:_sessionId,user_profile:_user||null})});
     var parsed=await res.json();
     if(parsed.error==='free_limit_reached'){stopSh();stopMortarMsgs();if(_sbSession){openM('paywall-modal');}else{_ps=true;openM('auth-modal');}if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}return;}
+    if(parsed.error==='daily_limit_reached'){stopSh();stopMortarMsgs();
+      document.getElementById('rpc').innerHTML='<div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:0 24px"><div style="font-family:Cormorant Garamond,serif;font-size:48px;opacity:.15">🌿</div><div style="font-family:Cormorant Garamond,serif;font-size:24px;color:var(--ink)">You have been seeking wisdom all day</div><div style="font-size:13px;color:var(--muted);max-width:400px;line-height:1.8">We love your curiosity. As a small team running on ancient wisdom and modern compute, we can only support so many searches per day. The Vaidya needs to rest. Come back tomorrow and we will be ready for you. 🙏</div></div>';
+      if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}return;}
     _herbs=parsed.remedies||[];
     _searchId=parsed.search_id||null;
     _cnt++;
     stopSh();stopMortarMsgs();renderResults(parsed);
   }catch(e){
     stopSh();stopMortarMsgs();
-    document.getElementById('rpc').innerHTML='<div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center"><div style="font-size:36px;opacity:.2">✦</div><div style="font-family:Cormorant Garamond,serif;font-size:22px;color:var(--amber)">The oracle went quiet</div><div style="font-size:12px;color:var(--muted)">Please try again in a moment.</div></div>';
+    document.getElementById('rpc').innerHTML='<div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center"><div style="font-size:36px;opacity:.2">✦</div><div style="font-family:Cormorant Garamond,serif;font-size:22px;color:var(--amber)">The oracle went quiet</div><div style="font-size:11px;color:rgba(201,150,42,.4);letter-spacing:.1em;font-family:Cormorant Garamond,serif;font-style:italic">वैद्य · Vaidya</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Please try again in a moment.</div></div>';
   }
   if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}
 }
@@ -1168,19 +1164,19 @@ async function startCheckout(){
   </div>
 </div>
 
-</body>
+<!-- PAYWALL MODAL -->
+<div class="mbd" id="paywall-modal">
   <div class="mbox" style="max-width:420px">
+    <button class="mx" onclick="closeM('paywall-modal')">✕</button>
     <div class="m-om" style="font-size:20px">✦</div>
     <div class="m-tit">You've used your 3 free searches</div>
     <div class="m-sub">Join ĀNANDA to unlock unlimited searches, your personal protocol, saved history &amp; more.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-      <!-- Monthly -->
       <div id="plan-monthly" onclick="selectPlan('monthly')" style="border:2px solid var(--gold);border-radius:6px;padding:16px 14px;cursor:pointer;text-align:center;background:rgba(201,150,42,.06)">
         <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px">Monthly</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--ink)">$9<span style="font-size:14px">.99</span></div>
         <div style="font-size:10px;color:var(--muted);margin-top:2px">per month</div>
       </div>
-      <!-- Annual -->
       <div id="plan-annual" onclick="selectPlan('annual')" style="border:1.5px solid var(--linen);border-radius:6px;padding:16px 14px;cursor:pointer;text-align:center;position:relative">
         <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--forest);color:var(--gold);font-size:8.5px;font-weight:600;letter-spacing:.1em;padding:3px 10px;border-radius:20px;white-space:nowrap">SAVE 33%</div>
         <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px">Annual</div>
@@ -1198,7 +1194,7 @@ async function startCheckout(){
       </div>
     </div>
     <button id="stripe-btn" class="m-sb" onclick="startCheckout()" style="font-size:12px;padding:13px;background:var(--gold);color:var(--forest);font-weight:700">
-      Continue with Monthly — $9.99 →
+      Continue with Monthly $9.99 →
     </button>
     <div style="font-size:8.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;opacity:.55">
       Secured by Stripe · Cancel anytime · No hidden fees
