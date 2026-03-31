@@ -390,16 +390,18 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
       <div class="logo">ĀNANDA</div>
       <div class="logo-s">आनन्द · Ayurvedic Wellness</div>
     </div>
-    <div class="api-bl">
-      <div class="api-lbl" id="api-lbl">Anthropic API Key</div>
-      <div class="api-row"><input type="password" id="api-in" class="api-i" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false"/><button class="api-sv" onclick="saveKey()">Save</button></div>
-    </div>
     <div class="inp-area">
-      <div class="oracle-q">What does your body wish to tell you today?</div>
+      <div class="oracle-q">The oldest medicine on earth.<br>Now personalized to you.</div>
       <div class="g-line"></div>
-      <div class="inp-hint">Describe how you feel, what aches, what feels off.<br>Ancient wisdom — personalized to you.</div>
+      <div class="inp-hint">Tell us how you feel in plain language. ĀNANDA analyzes thousands of ancient Ayurvedic texts and modern clinical studies to identify the herbs that work for your exact constitution. No bias. No sponsored results. Just what the research says is right for you.</div>
       <textarea id="sym" placeholder="e.g. I've been exhausted and anxious, my digestion is slow, I can't sleep…"></textarea>
-      <div class="btn-row"><button class="seek-btn" id="seek-btn" onclick="seekRemedy()">Seek your remedy</button><div class="k-hint">⌘ + Enter</div></div>
+      <div class="btn-row"><button class="seek-btn" id="seek-btn" onclick="seekRemedy()">Find my remedy</button><div class="k-hint">⌘ + Enter</div></div>
+      <!-- Trust pillars -->
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:6px">
+        <div style="font-size:10px;color:rgba(201,150,42,.38);letter-spacing:.04em;display:flex;align-items:center;gap:7px"><span style="color:rgba(201,150,42,.5)">✦</span> Rooted in the Charaka Samhita and 3 classical Ayurvedic texts</div>
+        <div style="font-size:10px;color:rgba(201,150,42,.38);letter-spacing:.04em;display:flex;align-items:center;gap:7px"><span style="color:rgba(201,150,42,.5)">✦</span> Cross-referenced with peer-reviewed clinical research</div>
+        <div style="font-size:10px;color:rgba(201,150,42,.38);letter-spacing:.04em;display:flex;align-items:center;gap:7px"><span style="color:rgba(201,150,42,.5)">✦</span> Curated product picks you can order in one place</div>
+      </div>
       <div class="chips">
         <button class="chip" onclick="go('Exhausted, burned out, struggling to focus')">Exhausted &amp; foggy</button>
         <button class="chip" onclick="go('Digestion off, bloated and heavy after eating')">Bloated &amp; sluggish</button>
@@ -880,6 +882,7 @@ function renderResults(data){
     +(showSign?'<div class="signin-tease" style="margin-top:12px"><div><div class="st-t">Enjoying ĀNANDA?</div><div class="st-s" style="margin-top:2px">Sign in for unlimited searches &amp; personalized guidance.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>':'')
     +'<div id="proto-sec"></div>'
     +'</div>';
+  showFooter();
 
   // Auto-collapse full cards when user scrolls past them (Issue 4)
   setTimeout(function(){
@@ -1008,11 +1011,27 @@ function renderProtocol(p){
   },100);
 }
 
-// ── NAV ───────────────────────────────────────────────────────────────────────
+// ── CONTACT ───────────────────────────────────────────────────────────────────
+function submitContact(){
+  var n=document.getElementById('cn').value.trim();
+  var e=document.getElementById('ce').value.trim();
+  var m=document.getElementById('cm').value.trim();
+  if(!e||!m){alert('Please fill in your email and message.');return;}
+  // Opens native mail client with pre-filled email — no backend needed
+  var subject=encodeURIComponent('ĀNANDA Partnership Enquiry'+(n?' from '+n:''));
+  var body=encodeURIComponent('Name: '+(n||'Not provided')+'\nEmail: '+e+'\n\nMessage:\n'+m);
+  window.location.href='mailto:vb@lifeeconomy.ai?subject='+subject+'&body='+body;
+  closeM('contact-modal');
+}
+
+// Show footer on results page
+function showFooter(){var f=document.getElementById('ananda-footer');if(f)f.style.display='block';}
+function hideFooter(){var f=document.getElementById('ananda-footer');if(f)f.style.display='none';}
 function goHome(){
   document.body.className='home-mode';
   _herbs=[];_query='';_expanded=false;
-  var b=document.getElementById('seek-btn');if(b){b.disabled=false;b.textContent='Seek your remedy';}
+  hideFooter();
+  var b=document.getElementById('seek-btn');if(b){b.disabled=false;b.textContent='Find my remedy';}
 }
 function go(t){document.getElementById('sym').value=t;seekRemedy();}
 document.getElementById('sym').addEventListener('keydown',function(e){if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))seekRemedy();});
@@ -1063,8 +1082,31 @@ async function startCheckout(){
   }
 })();
 </script>
-<!-- PAYWALL MODAL -->
-<div class="mbd" id="paywall-modal">
+<!-- CONTACT MODAL -->
+<div class="mbd" id="contact-modal">
+  <div class="mbox" style="max-width:400px">
+    <button class="mx" onclick="closeM('contact-modal')">✕</button>
+    <div class="m-om" style="font-size:20px">✦</div>
+    <div class="m-tit" style="font-size:18px">Partner with ĀNANDA</div>
+    <div class="m-sub">Brands, practitioners, researchers and collaborators welcome. We read every message.</div>
+    <div class="mf"><label>Your name</label><input type="text" id="cn" placeholder="Your name"/></div>
+    <div class="mf"><label>Your email</label><input type="email" id="ce" placeholder="you@company.com"/></div>
+    <div class="mf"><label>Message</label><textarea id="cm" style="height:90px;width:100%;padding:9px 11px;border:1.5px solid var(--linen);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;resize:none;background:var(--white)" placeholder="Tell us about your brand or how you'd like to collaborate…" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--linen)'"></textarea></div>
+    <button class="m-sb" onclick="submitContact()">Send message</button>
+    <div class="m-leg">We typically respond within 48 hours.</div>
+  </div>
+</div>
+
+<!-- SUBTLE FOOTER (only shows on results page) -->
+<div id="ananda-footer" style="display:none;background:var(--forest);border-top:1px solid rgba(201,150,42,.08);padding:18px 34px;text-align:center">
+  <div style="max-width:1320px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:.2em;color:rgba(201,150,42,.35)">ĀNANDA</div>
+    <div style="font-size:10px;color:rgba(201,150,42,.2);letter-spacing:.04em">Rooted in Charaka Samhita · Educational purposes only · Consult a qualified Ayurvedic practitioner</div>
+    <button onclick="openM('contact-modal')" style="background:none;border:none;cursor:pointer;font-size:10px;color:rgba(201,150,42,.3);letter-spacing:.1em;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:color .2s" onmouseover="this.style.color='rgba(201,150,42,.7)'" onmouseout="this.style.color='rgba(201,150,42,.3)'">Partner with us ✦</button>
+  </div>
+</div>
+
+</body>
   <div class="mbox" style="max-width:420px">
     <div class="m-om" style="font-size:20px">✦</div>
     <div class="m-tit">You've used your 3 free searches</div>
