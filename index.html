@@ -3,7 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ĀNANDA — Ayurvedic Wisdom</title>
+<title>ĀNANDA — Personalized Ayurvedic Remedies | Ancient Wisdom, Modern Science</title>
+<meta name="description" content="Discover your personalized Ayurvedic herbs based on your symptoms and dosha. ĀNANDA combines 5,000 years of Ayurvedic wisdom with modern clinical research. Get your custom remedy protocol with curated Amazon product picks.">
+<meta name="keywords" content="ayurvedic remedies, ayurvedic herbs, ayurveda, ashwagandha, triphala, brahmi, dosha, vata pitta kapha, natural remedies, herbal medicine, personalized ayurveda, holistic wellness">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.buyananda.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.buyananda.com/">
+<meta property="og:title" content="ĀNANDA — Your Personal Ayurvedic Oracle">
+<meta property="og:description" content="Tell us how you feel. ĀNANDA identifies the exact Ayurvedic herbs for your body, rooted in Charaka Samhita and validated by modern research. Personalized protocols. Curated Amazon picks.">
+<meta property="og:image" content="https://www.buyananda.com/og-image.png">
+<meta property="og:site_name" content="ĀNANDA Ayurvedic Wellness">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ĀNANDA — Your Personal Ayurvedic Oracle">
+<meta name="twitter:description" content="5,000 years of Ayurvedic wisdom, personalized to you. Describe your symptoms. Get your herbs. Order in one click.">
+<meta name="twitter:image" content="https://www.buyananda.com/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ĀNANDA Ayurvedic Wellness","url":"https://www.buyananda.com","description":"Personalized Ayurvedic remedy recommendations powered by ancient texts and modern research.","applicationCategory":"HealthApplication","offers":{"@type":"Offer","price":"9.99","priceCurrency":"USD"}}</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-51MSY6L7GJ"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-51MSY6L7GJ');</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
@@ -451,7 +468,7 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 // Replace these with your values from supabase.com → Project Settings → API
 var SUPABASE_URL  = 'https://zzrqmawsobgulqwvonbq.supabase.co';
 var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6cnFtYXdzb2JndWxxd3ZvbmJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTg2NzUsImV4cCI6MjA5MDQ5NDY3NX0.w_R8UwGfbstFbPYmQ5E1TltAr7pyGLDspswwiJyYWME';
-var EDGE_FN_URL   = SUPABASE_URL+'/functions/v1/ananda-ai';
+var EDGE_FN_URL   = SUPABASE_URL+'/functions/v1/ananda-ai?apikey='+SUPABASE_ANON;
 var _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 var _sessionId=localStorage.getItem('ananda_sid')||(function(){var id='sess_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('ananda_sid',id);return id;})();
 
