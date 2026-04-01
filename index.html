@@ -459,24 +459,40 @@ var _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 var _sessionId=localStorage.getItem('ananda_sid')||(function(){var id='sess_'+Date.now()+'_'+Math.random().toString(36).slice(2);localStorage.setItem('ananda_sid',id);return id;})();
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-var _user=null,_sbSession=null,_ps=false,_pp=false,_herbs=[],_query='',_searchId=null,_expanded=true,FREE_N=3,_cnt=0;
+var _user=null,_sbSession=null,_ps=false,_pp=false,_herbs=[],_query='',_searchId=null,_expanded=true,FREE_N=3,_cnt=0,_isPaid=false,_lastProto=null;
 
 // Init — restore session
 (async function(){
   var s=await _sb.auth.getSession();
-  if(s.data.session){_sbSession=s.data.session;var p=await _sb.from('profiles').select('*').eq('id',s.data.session.user.id).single();_user=p.data;rname();}
+  if(s.data.session){
+    _sbSession=s.data.session;
+    var p=await _sb.from('profiles').select('*').eq('id',s.data.session.user.id).single();
+    _user=p.data;rname();
+    await checkSubscription();
+  }
   _sb.auth.onAuthStateChange(async function(event,session){
     if(session){
       _sbSession=session;
       var p2=await _sb.from('profiles').select('*').eq('id',session.user.id).single();
       _user=p2.data;rname();
+      await checkSubscription();
       if(_ps){_ps=false;seekRemedy();}
       else if(_pp){_pp=false;generateProtocol();}
       else if(document.body.className==='results-mode'&&_herbs.length){refreshProtoCTA();}
       if(!_user||!_user.age){setTimeout(function(){openM('intake-modal');},400);}
-    }else{_sbSession=null;_user=null;rname();}
+    }else{_sbSession=null;_user=null;_isPaid=false;rname();}
   });
 })();
+
+async function checkSubscription(){
+  if(!_sbSession)return;
+  try{
+    var headers={'Content-Type':'application/json','apikey':SUPABASE_ANON,'Authorization':'Bearer '+_sbSession.access_token};
+    var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'check_sub'})});
+    var data=await res.json();
+    _isPaid=data.subscribed===true;
+  }catch(e){_isPaid=false;}
+}
 
 function rname(){var n=document.getElementById('tb-name'),e=document.getElementById('tb-edit-btn');if(_user){n.textContent='✦ '+(_user.name||'You');if(e)e.style.display='block';}else{n.textContent='';if(e)e.style.display='none';}}
 
@@ -787,7 +803,7 @@ async function seekRemedy(){
     if(_sbSession)headers['Authorization']='Bearer '+_sbSession.access_token;
     var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'search',query:input,session_id:_sessionId,user_profile:_user||null})});
     var parsed=await res.json();
-    if(parsed.error==='free_limit_reached'){stopSh();stopMortarMsgs();if(_sbSession){openM('paywall-modal');}else{_ps=true;openM('auth-modal');}if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}return;}
+    if(parsed.error==='free_limit_reached'){stopSh();stopMortarMsgs();if(_isPaid){/* paid user — server will handle */}else if(_sbSession){openM('paywall-modal');}else{_ps=true;openM('auth-modal');}if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}return;}
     if(parsed.error==='daily_limit_reached'){stopSh();stopMortarMsgs();
       document.getElementById('rpc').innerHTML='<div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:0 24px"><div style="font-family:Cormorant Garamond,serif;font-size:48px;opacity:.15">🌿</div><div style="font-family:Cormorant Garamond,serif;font-size:24px;color:var(--ink)">You have been seeking wisdom all day</div><div style="font-size:13px;color:var(--muted);max-width:400px;line-height:1.8">We love your curiosity. As a small team running on ancient wisdom and modern compute, we can only support so many searches per day. The Vaidya needs to rest. Come back tomorrow and we will be ready for you. 🙏</div></div>';
       if(btn){btn.disabled=false;btn.textContent='Seek your remedy';}return;}
@@ -980,6 +996,7 @@ async function generateProtocol(){
 }
 
 function renderProtocol(p){
+  _lastProto=p;
   var ps=document.getElementById('proto-sec');
   var TMAP={'Morning':'sc-morning','Afternoon':'sc-afternoon','Evening':'sc-evening','Night':'sc-night'};
 
@@ -1044,7 +1061,9 @@ function renderProtocol(p){
     +'<div class="tl-grid">'+tl+'</div>'
     // Papers — muted
     +'<div class="sec-lbl">Scientific Research</div>'
-    +'<div class="papers-wrap">'+papers+'</div>';
+    +'<div class="papers-wrap">'+papers+'</div>'
+    // Save protocol button for premium users
+    +(_isPaid?'<div style="margin-top:20px;text-align:center"><button onclick="saveProtocol()" id="save-proto-btn" style="background:transparent;border:1px solid rgba(201,150,42,.3);border-radius:4px;color:var(--gold);cursor:pointer;font-family:DM Sans,sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;padding:10px 22px;text-transform:uppercase;transition:all .2s" onmouseover="this.style.background=\'rgba(201,150,42,.08)\'" onmouseout="this.style.background=\'transparent\'">✦ Save to My Protocols</button></div>':'');
 
   ps.classList.add('on');
   setTimeout(function(){
@@ -1085,6 +1104,19 @@ function submitContact(){
 // Show footer on results page
 function showFooter(){var f=document.getElementById('ananda-footer');if(f)f.style.display='block';}
 function hideFooter(){var f=document.getElementById('ananda-footer');if(f)f.style.display='none';}
+async function saveProtocol(){
+  if(!_sbSession||!_isPaid)return;
+  var btn=document.getElementById('save-proto-btn');
+  if(btn){btn.textContent='Saving…';btn.disabled=true;}
+  try{
+    var headers={'Content-Type':'application/json','apikey':SUPABASE_ANON,'Authorization':'Bearer '+_sbSession.access_token};
+    var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'save_protocol',protocol:_lastProto,query:_query,herbs:_herbs,search_id:_searchId})});
+    var data=await res.json();
+    if(data.saved){if(btn){btn.textContent='✓ Saved to My Protocols';btn.style.color='var(--green-ok)';btn.style.borderColor='var(--green-ok)';}}
+    else{if(btn){btn.textContent='✦ Save to My Protocols';btn.disabled=false;}}
+  }catch(e){if(btn){btn.textContent='✦ Save to My Protocols';btn.disabled=false;}}
+}
+
 function goHome(){
   document.body.className='home-mode';
   _herbs=[];_query='';_expanded=false;
@@ -1132,11 +1164,8 @@ async function startCheckout(){
 (function(){
   var params=new URLSearchParams(window.location.search);
   if(params.get('subscribed')==='true'){
-    setTimeout(function(){
-      alert('🎉 Welcome to ĀNANDA! Your subscription is active. Enjoy unlimited searches.');
-      // Clean URL
-      history.replaceState({},'',window.location.pathname);
-    },1500);
+    history.replaceState({},'',window.location.pathname);
+    setTimeout(function(){openM('welcome-modal');},1200);
   }
 })();
 </script>
@@ -1200,6 +1229,26 @@ async function startCheckout(){
       Secured by Stripe · Cancel anytime · No hidden fees
     </div>
     <button onclick="closeM('paywall-modal')" style="display:block;width:100%;margin-top:8px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted);text-align:center;padding:6px">Maybe later</button>
+  </div>
+</div>
+
+<!-- WELCOME MODAL (shown after successful subscription) -->
+<div class="mbd" id="welcome-modal">
+  <div class="mbox" style="max-width:420px;text-align:center">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--gold);margin-bottom:8px">✦</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--ink);margin-bottom:6px">Welcome to ĀNANDA</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--muted);margin-bottom:20px">आनन्द · Bliss · Boundless Wellness</div>
+    <div style="background:var(--cream);border-radius:6px;padding:16px 18px;margin-bottom:20px;text-align:left">
+      <div style="font-size:10px;color:var(--ink);line-height:2">
+        ✦ Unlimited Ayurvedic searches, every day<br>
+        ✦ Full personal protocol &amp; daily schedule<br>
+        ✦ Save your protocols to your profile<br>
+        ✦ ĀNANDA Top 3 curated product picks<br>
+        ✦ Scientific research behind every remedy
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px">The ancient wisdom of the Vaidya is now yours — personalized, precise, and always available. Begin your healing journey whenever you are ready.</div>
+    <button onclick="closeM('welcome-modal')" style="width:100%;background:var(--forest);border:none;border-radius:4px;color:var(--parchment);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.15em;padding:13px;text-transform:uppercase;transition:background .2s">Begin seeking →</button>
   </div>
 </div>
 
