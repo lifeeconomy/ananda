@@ -360,11 +360,16 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 
 /* Mobile home padding */
 @media(max-width:600px){
-  body.home-mode .lp{padding:0 24px;min-height:100vh}
-  .rp{padding:16px 16px 64px}
+  body.home-mode .lp{padding:0 28px;min-height:100vh}
+  .rp{padding:20px 20px 80px}
+  .rp-greet{font-size:18px}
+  .rp-dosha{flex-direction:column;align-items:flex-start;gap:8px}
+  .rp-ds{display:none}
+  .view-toggle{flex-wrap:wrap;gap:8px}
   .proto-cta{flex-direction:column;align-items:flex-start}
   .kit-bar-top{flex-direction:column}
   .kit-buy-all{width:100%}
+  .tb-q{display:none}
 }
 </style>
 </head>
@@ -515,7 +520,7 @@ function openM(id){document.getElementById(id).classList.add('open');}
 function closeM(id){document.getElementById(id).classList.remove('open');}
 
 function sso(p){
-  if(p==='google'){_sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});}
+  if(p==='google'){_sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://www.buyananda.com'}});}
   else{var n=prompt('Amazon Sign-In\nYour name:');if(!n)return;document.getElementById('an').value=n;submitAuth();}
 }
 
@@ -524,7 +529,7 @@ function submitAuth(){
   if(!e){alert('Please enter your email.');return;}
   var btn=document.querySelector('#auth-modal .m-sb');
   if(btn){btn.textContent='Sending link…';btn.disabled=true;}
-  _sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:window.location.href,data:{full_name:n||e.split('@')[0]}}}).then(function(r){
+  _sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:'https://www.buyananda.com',data:{full_name:n||e.split('@')[0]}}}).then(function(r){
     if(btn){btn.textContent='Continue →';btn.disabled=false;}
     if(r.error){alert('Error: '+r.error.message);return;}
     closeM('auth-modal');
