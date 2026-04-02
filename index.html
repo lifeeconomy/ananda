@@ -413,6 +413,20 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .hf-cmp-btn:hover{background:var(--forest-light)}
 .hf-cmp-lock{opacity:.45}
 
+
+/* ══ DISCLAIMER ═════════════════════════════════ */
+.disc-bullets{background:var(--cream);border-radius:6px;padding:14px 16px;margin-bottom:16px;text-align:left}
+.disc-bullets div{font-size:11px;color:var(--ink);line-height:2.1}
+.disc-check-wrap{display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:18px;padding:12px 14px;background:#FFF8F0;border:1px solid rgba(201,150,42,.2);border-radius:5px}
+.disc-check-wrap input{margin-top:3px;flex-shrink:0;width:15px;height:15px;accent-color:var(--gold);cursor:pointer}
+.disc-check-wrap span{font-size:10.5px;color:var(--muted);line-height:1.65}
+/* ══ MANAGE SUB BUTTON ═══════════════════════════ */
+.tb-manage{background:rgba(76,175,122,.12);border:1px solid rgba(76,175,122,.3);border-radius:3px;color:rgba(76,175,122,.9);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;letter-spacing:.12em;padding:6px 10px;text-transform:uppercase;transition:all .2s;display:none}
+.tb-manage:hover{background:rgba(76,175,122,.22)}
+/* ══ COMPARE ON STRIP TILE ═══════════════════════ */
+.hs-cmp-badge{position:absolute;bottom:12px;right:12px;z-index:5;background:rgba(201,150,42,.18);border:1px solid rgba(201,150,42,.35);border-radius:3px;padding:4px 9px;font-size:8.5px;font-weight:600;letter-spacing:.08em;color:var(--gold);cursor:pointer;transition:background .2s;backdrop-filter:blur(4px)}
+.hs-cmp-badge:hover{background:rgba(201,150,42,.32)}
+
 /* Mobile home padding */
 @media(max-width:600px){
   body.home-mode .lp{padding:0 28px;min-height:100vh}
@@ -490,6 +504,7 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
   <div class="tb-r">
     <div class="tb-name" id="tb-name"></div>
     <button class="tb-edit-btn" id="tb-edit-btn" onclick="openEditProfile()" style="display:none">✎ Profile</button>
+    <button class="tb-manage" id="tb-manage" onclick="openManageSub()">✦ Member</button>
     <button class="tb-ns" onclick="goHome()">↩ Home</button>
   </div>
 </div>
@@ -561,7 +576,7 @@ var _user=null,_sbSession=null,_ps=false,_pp=false,_herbs=[],_query='',_searchId
       _user=p2.data;rname();
       await checkSubscription();
       if(_ps){_ps=false;seekRemedy();}
-      else if(_pp){_pp=false;generateProtocol();}
+      else if(_pp){_pp=false;generateProtocol(true);}
       else if(document.body.className==='results-mode'&&_herbs.length){refreshProtoCTA();}
       if(!_user||!_user.age){setTimeout(function(){openM('intake-modal');},400);}
     }else{_sbSession=null;_user=null;_isPaid=false;rname();}
@@ -578,7 +593,7 @@ async function checkSubscription(){
   }catch(e){_isPaid=false;}
 }
 
-function rname(){var n=document.getElementById('tb-name'),e=document.getElementById('tb-edit-btn');if(_user){n.textContent='✦ '+(_user.name||'You');if(e)e.style.display='block';}else{n.textContent='';if(e)e.style.display='none';}}
+function rname(){var n=document.getElementById('tb-name'),e=document.getElementById('tb-edit-btn'),m=document.getElementById('tb-manage');if(_user){n.textContent=_user.name||'';if(e)e.style.display='block';}else{n.textContent='';if(e)e.style.display='none';}if(m)m.style.display=_isPaid?'block':'none';}
 
 // ── MODALS ─────────────────────────────────────────────────────────────────────
 function openM(id){document.getElementById(id).classList.add('open');}
@@ -615,7 +630,7 @@ async function submitIntake(){
   closeM('intake-modal');rname();
   document.getElementById('intake-title').textContent='Personalize your path';
   document.getElementById('intake-sub').textContent='Quick intake so ANANDA can tailor guidance specifically to you.';
-  if(_ps){_ps=false;seekRemedy();}else if(_pp){_pp=false;generateProtocol();}else if(document.body.className==='results-mode'&&_herbs.length){refreshProtoCTA();}
+  if(_ps){_ps=false;seekRemedy();}else if(_pp){_pp=false;generateProtocol(true);}else if(document.body.className==='results-mode'&&_herbs.length){refreshProtoCTA();}
 }
 
 // ── AMAZON CLICK TRACKING ─────────────────────────────────────────────────────
@@ -976,8 +991,10 @@ function stripTiles(){
       +'<div class="hs-roman">'+(r.romanSanskrit||'')+'</div>'
       +'<div class="hs-eng">'+r.name+'</div>'
       +'<div class="hs-tag">'+(r.tagline||'')+'</div>'
-      +'<div style="font-size:9px;color:rgba(201,150,42,.6);margin-top:6px;letter-spacing:.08em">Tap to see full details →</div>'
-      +'</div></div>';
+      +'<div style="font-size:9px;color:rgba(201,150,42,.6);margin-top:6px;letter-spacing:.08em">Tap to expand ✦</div>'
+      +'</div>'
+      +(_isPaid?'<button class="hs-cmp-badge" onclick="event.stopPropagation();openComparison('+i+')">Compare ✦</button>':'')
+      +'</div>';
   }).join('');
 }
 
@@ -1085,14 +1102,13 @@ function renderResults(data){
   var dosha=data.dosha||'Vata',color=DC[dosha]||'#8B6014';
   var showSign=(_cnt===1&&!_user);
   var mobile=isMobile();
-  // On mobile start compact (strip tiles); on desktop start expanded (full cards)
-  _expanded=!mobile;
+  // Always start compact — user clicks to expand
+  _expanded=false;
   var protoCTA=_user
     ?(_isPaid?buildProtoCTA():'')
     :'<div class="signin-tease"><div><div class="st-t">✦ Your personal Rx document is ready</div><div class="st-s" style="margin-top:2px">Sign in free to see your dosing schedule, timeline &amp; downloadable prescription.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>';
 
   var rxTease=(_user&&!_isPaid)?buildRxTease():'';
-  var paidProtoCTA=(_user&&_isPaid)?'':(_user&&!_isPaid?'':'');
 
   document.getElementById('rpc').innerHTML=
     '<div class="rp">'
@@ -1100,12 +1116,10 @@ function renderResults(data){
     +'<div class="rp-div"></div>'
     +'<div class="rp-dosha"><div><div class="rp-dl">Imbalanced Dosha</div><div class="rp-dn" style="color:'+color+'">'+dosha+'</div></div><div class="rp-ds"></div><div class="rp-di">'+data.dosha_insight+'</div></div>'
     +'<div class="view-toggle"><div class="vt-lbl">Your 4 recommended remedies</div><div class="vt-sp"></div>'
-    +'<button class="vt-btn'+(mobile?'':' exp')+'" id="vt-btn" onclick="toggleExpand()"><span class="vt-ic">▲</span><span class="vt-txt">'+(mobile?'See full details':'Show compact view')+'</span></button></div>'
-    +'<div class="herb-strip" id="hs-strip" style="'+(mobile?'':'display:none')+'">'+stripTiles()+'</div>'
-    +'<div class="cards-grid" id="hs-full" style="'+(mobile?'display:none':'')+'">'+fullCards()+'</div>'
-    +kitSection()
+    +'<button class="vt-btn" id="vt-btn" onclick="toggleExpand()"><span class="vt-ic">▲</span><span class="vt-txt">See full details</span></button></div>'
+    +'<div class="herb-strip" id="hs-strip">'+stripTiles()+'</div>'
+    +'<div class="cards-grid" id="hs-full" style="display:none">'+fullCards()+'</div>'
     +rxTease
-    +(_user&&_isPaid?buildProtoCTA():'')
     +protoCTA
     +(showSign?'<div class="signin-tease" style="margin-top:12px"><div><div class="st-t">Enjoying ĀNANDA?</div><div class="st-s" style="margin-top:2px">Sign in free for unlimited searches &amp; your personal Rx document.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>':'')
     +'<div id="proto-sec"></div>'
@@ -1130,13 +1144,14 @@ function renderResults(data){
 }
 
 // ── PROTOCOL ──────────────────────────────────────────────────────────────────
-async function generateProtocol(){
+async function generateProtocol(skipDisclaimer){
   if(!_user){_pp=true;openM('auth-modal');return;}
+  if(!skipDisclaimer&&!sessionStorage.getItem('ananda_disc')){openM('disclaimer-modal');return;}
   var cta=document.getElementById('proto-cta');if(cta)cta.style.display='none';
   var ps=document.getElementById('proto-sec');
   ps.innerHTML='<div class="proto-loading"><div class="proto-spin"></div><div class="proto-loading-t">Composing your personal protocol…</div></div>';
   ps.classList.add('on');
-  setTimeout(function(){var rp=document.getElementById('results-page');if(rp)rp.scrollTo({top:rp.scrollHeight,behavior:'smooth'});else ps.scrollIntoView({behavior:'smooth',block:'start'});},200);
+  setTimeout(function(){var rp=document.getElementById('results-page');if(rp&&ps){var top=ps.getBoundingClientRect().top+rp.scrollTop-80;rp.scrollTo({top:top,behavior:'smooth'});}},300);
   var names=_herbs.map(function(r){return r.name+(r.sanskrit?' ('+r.sanskrit+')':'');}).join(', ');
   var uctx='Name:'+_user.name+(_user.age?', age '+_user.age:'')+(_user.sex?', '+_user.sex:'')+(_user.focus?', focus: '+_user.focus:'')+(_user.dosha?', dosha: '+_user.dosha:'')+(_user.conditions?', conditions: '+_user.conditions:'')+(_user.report?', report: '+_user.report.substring(0,200):'');
   var sp='You are ANANDA — expert Ayurvedic physician. Generate a precise personal protocol. RESPOND ONLY VALID JSON (no markdown):\n{"summary":"2-3 sentence synthesis for this specific person","combination":"Take All Together|Prioritize Two|Sequential Rotation","combination_verdict":"One clear plain-English sentence — should they take all 4 or which to prioritize and why","rationale":"2-3 sentences: classical synergy and safety","synergies":"How these herbs potentiate each other classically and biochemically","schedule":[{"time":"Morning","time_sub":"Empty stomach · 6–8am","css_class":"sc-morning","icon":"🌅","herbs":[{"herb":"Name","dose":"exact e.g. 1 tsp or 500mg","anupana":"with warm water","instruction":"note"}]},{"time":"Afternoon","time_sub":"After lunch · 12–2pm","css_class":"sc-afternoon","icon":"☀️","herbs":[]},{"time":"Evening","time_sub":"With dinner · 6–8pm","css_class":"sc-evening","icon":"🌆","herbs":[]},{"time":"Night","time_sub":"Before sleep · 9–10pm","css_class":"sc-night","icon":"🌙","herbs":[]}],"timeline":[{"period":"Days 1–7","emoji":"🌱","headline":"First Signs of Relief","expectation":"Be specific and honest — what will change in the first week"},{"period":"Weeks 2–4","emoji":"🌿","headline":"Transformation Deepens","expectation":"Specific week 2-4 changes the person will notice"},{"period":"Month 2–3","emoji":"🌳","headline":"Deep Healing Complete","expectation":"Full therapeutic benefits achieved — specific and inspiring"}],"papers":[{"title":"Full paper title","authors":"First author et al.","journal":"Journal","year":"year","doi":"DOI or PMID","key_finding":"One specific sentence relevant to this person\'s condition"}]}';
@@ -1406,6 +1421,64 @@ async function startCheckout(){
     <button onclick="closeM('welcome-modal')" style="width:100%;background:var(--forest);border:none;border-radius:4px;color:var(--parchment);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.15em;padding:13px;text-transform:uppercase;transition:background .2s">Begin seeking →</button>
   </div>
 </div>
+
+
+<!-- DISCLAIMER MODAL -->
+<div class="mbd" id="disclaimer-modal">
+  <div class="mbox" style="max-width:400px">
+    <div class="m-om" style="font-size:22px">⚕</div>
+    <div class="m-tit" style="font-size:17px">A note before your Rx</div>
+    <div class="m-sub" style="margin-bottom:14px">ĀNANDA draws on 5,000 years of Ayurvedic wisdom and modern research. Please read before proceeding.</div>
+    <div class="disc-bullets">
+      <div>📚 This is an <strong>educational tool</strong>, not a medical service<br>🩺 These recommendations do <strong>not replace</strong> a physician or Ayurvedic practitioner<br>⚠ Consult a doctor before changing your regimen if pregnant, on medication, or managing a condition<br>✦ You take full responsibility for how you apply this guidance</div>
+    </div>
+    <label class="disc-check-wrap">
+      <input type="checkbox" id="disclaimer-cb" onchange="toggleDisclaimerBtn()">
+      <span>I understand ĀNANDA provides educational information only. I will consult a qualified practitioner for medical concerns and accept full responsibility for how I use these recommendations.</span>
+    </label>
+    <button id="disclaimer-proceed" class="m-sb" onclick="proceedFromDisclaimer()" disabled style="opacity:.38;cursor:not-allowed;transition:opacity .2s">View my Rx protocol →</button>
+    <button onclick="closeM('disclaimer-modal')" style="display:block;width:100%;margin-top:8px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted);text-align:center;padding:6px">Cancel</button>
+  </div>
+</div>
+
+<!-- MANAGE SUBSCRIPTION MODAL -->
+<div class="mbd" id="manage-modal">
+  <div class="mbox" style="max-width:380px;text-align:center">
+    <button class="mx" onclick="closeM('manage-modal')">✕</button>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--green-ok);margin-bottom:8px">✦</div>
+    <div class="m-tit" style="font-size:17px">ĀNANDA Member</div>
+    <div class="m-sub">Your subscription is active. You have full access to all protocols, comparisons and unlimited searches.</div>
+    <button id="portal-btn" class="m-sb" onclick="openStripePortal()" style="background:var(--forest);margin-bottom:10px">Manage or cancel subscription →</button>
+    <div style="font-size:9.5px;color:var(--muted);opacity:.6;line-height:1.7">You will be redirected to Stripe's secure billing portal to update payment, switch plans or cancel at any time.</div>
+    <button onclick="closeM('manage-modal')" style="display:block;width:100%;margin-top:12px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted);text-align:center;padding:6px">Close</button>
+  </div>
+</div>
+
+<script>
+function toggleDisclaimerBtn(){
+  var cb=document.getElementById('disclaimer-cb'),btn=document.getElementById('disclaimer-proceed');
+  if(btn){btn.disabled=!cb.checked;btn.style.opacity=cb.checked?'1':'.38';btn.style.cursor=cb.checked?'pointer':'not-allowed';}
+}
+function proceedFromDisclaimer(){
+  sessionStorage.setItem('ananda_disc','1');
+  closeM('disclaimer-modal');
+  generateProtocol(true);
+}
+function openManageSub(){openM('manage-modal');}
+async function openStripePortal(){
+  var btn=document.getElementById('portal-btn');
+  if(btn){btn.textContent='Opening portal…';btn.disabled=true;}
+  try{
+    var headers={'Content-Type':'application/json','apikey':SUPABASE_ANON,'Authorization':'Bearer '+_sbSession.access_token};
+    var res=await fetch(EDGE_FN_URL,{method:'POST',headers:headers,body:JSON.stringify({type:'create_portal',return_url:'https://www.buyananda.com'})});
+    var data=await res.json();
+    if(data.url){window.location.href=data.url;}else{throw new Error();}
+  }catch(e){
+    if(btn){btn.textContent='Manage or cancel subscription →';btn.disabled=false;}
+    window.location.href='mailto:support@lifeeconomy.ai?subject=Cancel%20ANANDA%20Subscription';
+  }
+}
+</script>
 
 </body>
 </html>
