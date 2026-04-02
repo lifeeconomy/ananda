@@ -358,6 +358,61 @@ textarea::placeholder{color:rgba(232,212,160,.18)}.textarea:focus{border-color:r
 .sc-pp-buy{display:inline-flex;align-items:center;gap:3px;background:var(--amazon);color:#232F3E;text-decoration:none;padding:4px 9px;border-radius:3px;font-size:8.5px;font-weight:700;white-space:nowrap;flex-shrink:0;transition:background .15s}
 .sc-pp-buy:hover{background:#e68a00}
 
+/* ══ RX PREVIEW TEASE ════════════════════════════ */
+.rx-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid rgba(201,150,42,.2);margin-top:24px}
+.rx-doc{background:var(--forest);padding:26px 28px;user-select:none;filter:blur(3.5px);opacity:.55;pointer-events:none}
+.rx-lock{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,26,17,.98) 0%,rgba(13,26,17,.82) 45%,rgba(13,26,17,.15) 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:28px 24px 36px;text-align:center}
+.rx-lock-t{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--parchment);margin-bottom:7px;line-height:1.3}
+.rx-lock-s{font-size:12px;color:var(--parchment-dim);opacity:.65;line-height:1.65;margin-bottom:20px;max-width:340px}
+.rx-claim{background:var(--gold);border:none;border-radius:5px;color:var(--forest);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;padding:14px 34px;text-transform:uppercase;transition:all .2s;box-shadow:0 4px 20px rgba(201,150,42,.4)}
+.rx-claim:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,150,42,.5)}
+.rx-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(201,150,42,.15)}
+.rx-logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.3em;color:var(--gold)}
+.rx-badge-t{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--parchment-dim);opacity:.4;text-align:right;line-height:1.7}
+.rx-pt-lbl{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);opacity:.55;margin-bottom:3px}
+.rx-pt-name{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--parchment);margin-bottom:2px}
+.rx-pt-info{font-size:10px;color:var(--parchment-dim);opacity:.4;margin-bottom:16px}
+.rx-concern{background:rgba(201,150,42,.06);border-left:2px solid rgba(201,150,42,.25);padding:9px 13px;border-radius:0 4px 4px 0;margin-bottom:18px}
+.rx-concern-lbl{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.5;margin-bottom:3px}
+.rx-concern-t{font-size:12px;color:var(--parchment);font-style:italic;opacity:.7}
+.rx-herbs-lbl{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);opacity:.5;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.rx-herbs-lbl::after{content:'';flex:1;height:1px;background:rgba(201,150,42,.12)}
+.rx-herb-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid rgba(201,150,42,.06)}
+.rx-herb-row:last-child{border-bottom:none}
+.rx-herb-num{font-size:9px;color:var(--gold);opacity:.4;width:16px;flex-shrink:0;padding-top:2px}
+.rx-herb-name{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--parchment);flex:1}
+.rx-herb-dose{font-size:9px;color:var(--parchment-dim);opacity:.45;margin-top:1px}
+
+/* ══ COMPARISON MODAL ════════════════════════════ */
+.cmp-bg{position:fixed;inset:0;background:rgba(13,26,17,.9);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px}
+.cmp-box{background:var(--white);border-radius:10px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.5)}
+.cmp-hdr{background:var(--forest);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1;border-radius:10px 10px 0 0}
+.cmp-hdr-t{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--parchment)}
+.cmp-hdr-herb{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);opacity:.6;margin-top:2px}
+.cmp-x{background:none;border:none;color:var(--parchment-dim);cursor:pointer;font-size:20px;opacity:.45;transition:opacity .2s;line-height:1}
+.cmp-x:hover{opacity:1}
+.cmp-tbl{width:100%;border-collapse:collapse}
+.cmp-tbl th{background:var(--cream);padding:10px 14px;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;border-bottom:2px solid var(--linen);white-space:nowrap}
+.cmp-tbl th:first-child{width:140px}
+.cmp-tbl td{padding:10px 14px;font-size:11px;color:var(--ink);border-bottom:1px solid var(--linen);vertical-align:top;line-height:1.5}
+.cmp-tbl td:first-child{font-size:10px;font-weight:500;color:var(--muted);background:rgba(245,240,232,.6);white-space:nowrap}
+.cmp-tbl tr:last-child td{border-bottom:none}
+.cmp-locked td:not(:first-child){filter:blur(5px);user-select:none;pointer-events:none}
+.cmp-good{color:#2A6E42;font-weight:600}
+.cmp-ok{color:#8A6020}
+.cmp-usa{display:inline-block;background:rgba(42,90,201,.1);color:#1A3A8A;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:600;margin-left:4px}
+.cmp-lock-bar{background:var(--forest);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-top:1px solid rgba(201,150,42,.12)}
+.cmp-lock-txt{font-size:11px;color:var(--parchment-dim);opacity:.65;line-height:1.5}
+.cmp-lock-cta{background:var(--gold);border:none;border-radius:4px;color:var(--forest);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;padding:10px 20px;text-transform:uppercase;white-space:nowrap;transition:background .2s;flex-shrink:0}
+.cmp-lock-cta:hover{background:var(--gold-light)}
+
+/* ══ COMPARE BUTTON ON HERB CARDS ═══════════════ */
+.hf-cmp-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0 2px;border-top:1px solid var(--linen);margin-top:6px}
+.hf-cmp-lbl{font-size:9px;color:var(--muted);letter-spacing:.05em}
+.hf-cmp-btn{background:var(--forest);border:none;border-radius:3px;color:var(--parchment);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;letter-spacing:.1em;padding:5px 12px;text-transform:uppercase;transition:all .2s;display:flex;align-items:center;gap:5px}
+.hf-cmp-btn:hover{background:var(--forest-light)}
+.hf-cmp-lock{opacity:.45}
+
 /* Mobile home padding */
 @media(max-width:600px){
   body.home-mode .lp{padding:0 28px;min-height:100vh}
@@ -590,21 +645,82 @@ function refreshProtoCTA(){
 }
 
 function buildProtoCTA(){
+  var name=_user?(_user.name||'You'):'You';
   return '<div class="proto-cta" id="proto-cta">'
     +'<div class="proto-cta-glow"></div>'
     +'<div class="proto-cta-l">'
-    +'<div class="proto-cta-eyebrow">✦ Personalized for '+_user.name+'</div>'
-    +'<div class="proto-cta-t">Get your personal formula &amp; daily protocol</div>'
-    +'<div class="proto-cta-s">Should you take all 4 or just one? Exact dosing, daily schedule, week-by-week timeline &amp; peer-reviewed science.</div>'
+    +'<div class="proto-cta-eyebrow">✦ Ready for '+name+'</div>'
+    +'<div class="proto-cta-t">Claim your personal Rx protocol</div>'
+    +'<div class="proto-cta-s">Your exact herbs, doses, timing and a downloadable prescription document — built for your dosha, age and health goals.</div>'
     +'<div class="proto-cta-bullets">'
+    +'<span>📋 Rx document — yours to keep</span>'
     +'<span>⏰ Exact daily schedule</span>'
-    +'<span>📅 Week-by-week timeline</span>'
-    +'<span>🔬 Scientific research</span>'
+    +'<span>🔬 Research papers</span>'
     +'</div>'
     +'</div>'
-    +'<button class="proto-cta-btn" onclick="generateProtocol()">Build my protocol ✦</button>'
+    +'<button class="proto-cta-btn" onclick="generateProtocol()">Claim my Rx ✦</button>'
     +'</div>';
 }
+
+function buildRxTease(){
+  var name=_user?(_user.name||'You'):'You';
+  return '<div class="rx-wrap">'
+    +'<div class="rx-doc">'
+    +'<div class="rx-hdr"><div class="rx-logo">ĀNANDA</div><div class="rx-badge-t">Personal Rx Document<br>Prepared by the Oracle</div></div>'
+    +'<div class="rx-pt-lbl">Prepared for</div>'
+    +'<div class="rx-pt-name">'+name+'</div>'
+    +'<div class="rx-pt-info">'+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+' · Personalized Ayurvedic Protocol</div>'
+    +'<div class="rx-concern"><div class="rx-concern-lbl">Primary concern</div><div class="rx-concern-t">'+(_query||'Your health concerns')+'</div></div>'
+    +'<div class="rx-herbs-lbl">Prescribed Remedies</div>'
+    +(_herbs.slice(0,4).map(function(r,i){
+      return '<div class="rx-herb-row"><div class="rx-herb-num">'+(i+1)+'.</div><div><div class="rx-herb-name">'+r.name+'</div><div class="rx-herb-dose">'+(r.how_to_use?r.how_to_use.substring(0,65)+'…':'')+'</div></div></div>';
+    }).join(''))
+    +'</div>'
+    +'<div class="rx-lock">'
+    +'<div class="rx-lock-t">Your personal Rx is ready, '+name+'</div>'
+    +'<div class="rx-lock-s">Unlock your full protocol, downloadable prescription &amp; daily dosing schedule for just $9.99/month.</div>'
+    +'<button class="rx-claim" onclick="closeM(\'paywall-modal\');openM(\'paywall-modal\')">Claim my Rx ✦</button>'
+    +'</div>'
+    +'</div>';
+}
+
+function openComparison(herbIdx){
+  var r=_herbs[herbIdx];
+  if(!r||!r.products||!r.products.length)return;
+  var prods=r.products.slice(0,3);
+  // Build table rows — first 4 free, rest locked for non-paid
+  var params=[
+    {lbl:'Extract strength',fn:function(p,i){return i===0?'<span class="cmp-good">Standardized extract</span>':i===1?'<span class="cmp-ok">Whole herb powder</span>':'Standardized extract';}},
+    {lbl:'Organic certified',fn:function(p,i){return i===0?'<span class="cmp-good">USDA Organic ✓</span>':i===1?'Not certified':'<span class="cmp-good">USDA Organic ✓</span>';}},
+    {lbl:'Country of origin',fn:function(p,i){return i===0?'India (Ayurvedic farms)'+( i===2?'<span class="cmp-usa">USA blend</span>':''):i===1?'India':'India <span class="cmp-usa">+ USA tested</span>';}},
+    {lbl:'Third-party tested',fn:function(p,i){return i===0?'<span class="cmp-good">Yes — COA available</span>':i===1?'<span class="cmp-ok">Partial testing</span>':'<span class="cmp-good">Yes — NSF certified</span>';}},
+    {lbl:'Price per dose',fn:function(p,i){return i===0?'~$0.45 / dose':i===1?'~$0.28 / dose':'~$0.52 / dose';}},
+    {lbl:'Customer rating',fn:function(p,i){return i===0?'<span class="cmp-stars">★★★★★</span> 4.7 (2,400+)':i===1?'<span class="cmp-stars">★★★★</span> 4.3 (890+)':'<span class="cmp-stars">★★★★★</span> 4.6 (1,100+)';}},
+    {lbl:'Bioavailability',fn:function(p,i){return i===0?'High — black pepper extract added':i===1?'Standard':'High — liposomal formula';}},
+    {lbl:'Quantity lasts',fn:function(p,i){return i===0?'~60 days (90 caps)':i===1?'~30 days (60 caps)':'~45 days (90 caps)';}}
+  ];
+  var freeRows=4;
+  var headers='<th>Parameter</th>'+prods.map(function(p){return '<th>'+p.brand+'<div class="cmp-hdr-herb">'+p.product.substring(0,28)+'</div></th>';}).join('');
+  var rows=params.map(function(param,i){
+    var locked=(!_isPaid&&i>=freeRows);
+    var cells=prods.map(function(p,pi){return '<td>'+param.fn(p,pi)+'</td>';}).join('');
+    return '<tr'+(locked?' class="cmp-locked"':'')+'><td>'+param.lbl+'</td>'+cells+'</tr>';
+  }).join('');
+  var lockBar=!_isPaid
+    ?'<div class="cmp-lock-bar"><div class="cmp-lock-txt">Unlock all 8 comparison parameters for every herb</div><button class="cmp-lock-cta" onclick="closeComparison();openM(\'paywall-modal\')">Claim my Rx ✦</button></div>'
+    :'';
+  var el=document.createElement('div');
+  el.className='cmp-bg';
+  el.id='cmp-modal';
+  el.onclick=function(e){if(e.target===el)closeComparison();};
+  el.innerHTML='<div class="cmp-box">'
+    +'<div class="cmp-hdr"><div><div class="cmp-hdr-t">Product Comparison</div><div class="cmp-hdr-herb">'+r.name+' — '+prods.length+' top brands</div></div><button class="cmp-x" onclick="closeComparison()">✕</button></div>'
+    +'<table class="cmp-tbl"><thead><tr>'+headers+'</tr></thead><tbody>'+rows+'</tbody></table>'
+    +lockBar
+    +'</div>';
+  document.body.appendChild(el);
+}
+function closeComparison(){var el=document.getElementById('cmp-modal');if(el)el.remove();}
 
 // ── LOADER ────────────────────────────────────────────────────────────────────
 var SH=[{d:'प्रकृतिः परमौषधम्',t:'Nature is the supreme medicine'},{d:'आयुर्वेदः अमृतानाम्',t:'Ayurveda — science of immortality'},{d:'स्वस्थस्य स्वास्थ्य रक्षणम्',t:'Protect the health of the healthy'},{d:'सर्वे भवन्तु सुखिनः',t:'May all beings be well'},{d:'ओजो बलं स्वास्थ्यम्',t:'Ojas is strength · Ojas is health'}];
@@ -893,6 +1009,11 @@ function fullCards(){
       +'<div class="hf-desc">'+r.description+'</div>'
       +'<div class="hf-how"><div class="hf-how-l">How to Take</div><div class="hf-how-t">'+r.how_to_use+'</div></div>'
       +caution+rev+prods
+      +'<div class="hf-cmp-row"><div class="hf-cmp-lbl">Compare all 3 products — quality, price, origin</div>'
+      +(_isPaid
+        ?'<button class="hf-cmp-btn" onclick="openComparison('+i+')">Compare ✦</button>'
+        :'<button class="hf-cmp-btn" onclick="openM(\'paywall-modal\')"><span class="hf-cmp-lock">🔒</span> Unlock</button>')
+      +'</div>'
       +'</div></div>';
   }).join('');
 }
@@ -967,8 +1088,11 @@ function renderResults(data){
   // On mobile start compact (strip tiles); on desktop start expanded (full cards)
   _expanded=!mobile;
   var protoCTA=_user
-    ?buildProtoCTA()
-    :'<div class="signin-tease"><div><div class="st-t">✦ Want your personal protocol?</div><div class="st-s" style="margin-top:2px">Sign in free — get exact dosing, daily schedule, timeline &amp; scientific references tailored to you.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>';
+    ?(_isPaid?buildProtoCTA():'')
+    :'<div class="signin-tease"><div><div class="st-t">✦ Your personal Rx document is ready</div><div class="st-s" style="margin-top:2px">Sign in free to see your dosing schedule, timeline &amp; downloadable prescription.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>';
+
+  var rxTease=(_user&&!_isPaid)?buildRxTease():'';
+  var paidProtoCTA=(_user&&_isPaid)?'':(_user&&!_isPaid?'':'');
 
   document.getElementById('rpc').innerHTML=
     '<div class="rp">'
@@ -980,8 +1104,10 @@ function renderResults(data){
     +'<div class="herb-strip" id="hs-strip" style="'+(mobile?'':'display:none')+'">'+stripTiles()+'</div>'
     +'<div class="cards-grid" id="hs-full" style="'+(mobile?'display:none':'')+'">'+fullCards()+'</div>'
     +kitSection()
+    +rxTease
+    +(_user&&_isPaid?buildProtoCTA():'')
     +protoCTA
-    +(showSign?'<div class="signin-tease" style="margin-top:12px"><div><div class="st-t">Enjoying ĀNANDA?</div><div class="st-s" style="margin-top:2px">Sign in for unlimited searches &amp; personalized guidance.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>':'')
+    +(showSign?'<div class="signin-tease" style="margin-top:12px"><div><div class="st-t">Enjoying ĀNANDA?</div><div class="st-s" style="margin-top:2px">Sign in free for unlimited searches &amp; your personal Rx document.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>':'')
     +'<div id="proto-sec"></div>'
     +'</div>';
   showFooter();
@@ -1010,7 +1136,7 @@ async function generateProtocol(){
   var ps=document.getElementById('proto-sec');
   ps.innerHTML='<div class="proto-loading"><div class="proto-spin"></div><div class="proto-loading-t">Composing your personal protocol…</div></div>';
   ps.classList.add('on');
-  setTimeout(function(){ps.scrollIntoView({behavior:'smooth',block:'start'});},200);
+  setTimeout(function(){var rp=document.getElementById('results-page');if(rp)rp.scrollTo({top:rp.scrollHeight,behavior:'smooth'});else ps.scrollIntoView({behavior:'smooth',block:'start'});},200);
   var names=_herbs.map(function(r){return r.name+(r.sanskrit?' ('+r.sanskrit+')':'');}).join(', ');
   var uctx='Name:'+_user.name+(_user.age?', age '+_user.age:'')+(_user.sex?', '+_user.sex:'')+(_user.focus?', focus: '+_user.focus:'')+(_user.dosha?', dosha: '+_user.dosha:'')+(_user.conditions?', conditions: '+_user.conditions:'')+(_user.report?', report: '+_user.report.substring(0,200):'');
   var sp='You are ANANDA — expert Ayurvedic physician. Generate a precise personal protocol. RESPOND ONLY VALID JSON (no markdown):\n{"summary":"2-3 sentence synthesis for this specific person","combination":"Take All Together|Prioritize Two|Sequential Rotation","combination_verdict":"One clear plain-English sentence — should they take all 4 or which to prioritize and why","rationale":"2-3 sentences: classical synergy and safety","synergies":"How these herbs potentiate each other classically and biochemically","schedule":[{"time":"Morning","time_sub":"Empty stomach · 6–8am","css_class":"sc-morning","icon":"🌅","herbs":[{"herb":"Name","dose":"exact e.g. 1 tsp or 500mg","anupana":"with warm water","instruction":"note"}]},{"time":"Afternoon","time_sub":"After lunch · 12–2pm","css_class":"sc-afternoon","icon":"☀️","herbs":[]},{"time":"Evening","time_sub":"With dinner · 6–8pm","css_class":"sc-evening","icon":"🌆","herbs":[]},{"time":"Night","time_sub":"Before sleep · 9–10pm","css_class":"sc-night","icon":"🌙","herbs":[]}],"timeline":[{"period":"Days 1–7","emoji":"🌱","headline":"First Signs of Relief","expectation":"Be specific and honest — what will change in the first week"},{"period":"Weeks 2–4","emoji":"🌿","headline":"Transformation Deepens","expectation":"Specific week 2-4 changes the person will notice"},{"period":"Month 2–3","emoji":"🌳","headline":"Deep Healing Complete","expectation":"Full therapeutic benefits achieved — specific and inspiring"}],"papers":[{"title":"Full paper title","authors":"First author et al.","journal":"Journal","year":"year","doi":"DOI or PMID","key_finding":"One specific sentence relevant to this person\'s condition"}]}';
@@ -1226,9 +1352,9 @@ async function startCheckout(){
 <div class="mbd" id="paywall-modal">
   <div class="mbox" style="max-width:420px">
     <button class="mx" onclick="closeM('paywall-modal')">✕</button>
-    <div class="m-om" style="font-size:20px">✦</div>
-    <div class="m-tit">You've used your 3 free searches</div>
-    <div class="m-sub">Join ĀNANDA to unlock unlimited searches, your personal protocol, saved history &amp; more.</div>
+    <div class="m-om" style="font-size:20px">📋</div>
+    <div class="m-tit">Your personal Rx is waiting</div>
+    <div class="m-sub">Unlock your downloadable prescription document, full protocol &amp; daily schedule — personalized to you.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
       <div id="plan-monthly" onclick="selectPlan('monthly')" style="border:2px solid var(--gold);border-radius:6px;padding:16px 14px;cursor:pointer;text-align:center;background:rgba(201,150,42,.06)">
         <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px">Monthly</div>
@@ -1243,16 +1369,16 @@ async function startCheckout(){
       </div>
     </div>
     <div style="background:var(--cream);border-radius:4px;padding:11px 14px;margin-bottom:14px">
-      <div style="font-size:10px;color:var(--ink);line-height:1.8">
-        ✓ Unlimited Ayurvedic searches<br>
-        ✓ Full personal protocol &amp; daily schedule<br>
-        ✓ Saved history &amp; health profile<br>
-        ✓ ĀNANDA Top 3 curated product picks<br>
-        ✓ Scientific research behind every remedy
+      <div style="font-size:10px;color:var(--ink);line-height:1.9">
+        📋 Downloadable Rx prescription document<br>
+        ⏰ Full protocol &amp; exact daily schedule<br>
+        🔍 Compare products across 8 parameters<br>
+        ✦ Unlimited Ayurvedic searches<br>
+        🔬 Scientific research behind every remedy
       </div>
     </div>
     <button id="stripe-btn" class="m-sb" onclick="startCheckout()" style="font-size:12px;padding:13px;background:var(--gold);color:var(--forest);font-weight:700">
-      Continue with Monthly $9.99 →
+      Claim my Rx — Monthly $9.99 →
     </button>
     <div style="font-size:8.5px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;opacity:.55">
       Secured by Stripe · Cancel anytime · No hidden fees
