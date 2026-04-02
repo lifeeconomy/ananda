@@ -715,7 +715,7 @@ function openComparison(herbIdx){
     {lbl:'Quantity lasts',fn:function(p,i){return i===0?'~60 days (90 caps)':i===1?'~30 days (60 caps)':'~45 days (90 caps)';}}
   ];
   var freeRows=4;
-  var headers='<th>Parameter</th>'+prods.map(function(p){return '<th>'+p.brand+'<div class="cmp-hdr-herb">'+p.product.substring(0,28)+'</div></th>';}).join('');
+  var headers='<th>Parameter</th>'+prods.map(function(p,pi){var url='https://www.amazon.com/s?k='+encodeURIComponent(p.search||p.product)+'&tag=lifeeconomy-20';return '<th>'+p.brand+'<div class="cmp-hdr-herb">'+p.product.substring(0,28)+'</div><a href="'+url+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;padding:4px 10px;background:#FF9900;color:#232F3E;border-radius:3px;font-size:8.5px;font-weight:700;text-decoration:none;letter-spacing:.04em">🛒 Buy</a></th>';}).join('');
   var rows=params.map(function(param,i){
     var locked=(!_isPaid&&i>=freeRows);
     var cells=prods.map(function(p,pi){return '<td>'+param.fn(p,pi)+'</td>';}).join('');
@@ -1119,6 +1119,7 @@ function renderResults(data){
     +'<button class="vt-btn" id="vt-btn" onclick="toggleExpand()"><span class="vt-ic">▲</span><span class="vt-txt">See full details</span></button></div>'
     +'<div class="herb-strip" id="hs-strip">'+stripTiles()+'</div>'
     +'<div class="cards-grid" id="hs-full" style="display:none">'+fullCards()+'</div>'
+    +kitSection()
     +rxTease
     +protoCTA
     +(showSign?'<div class="signin-tease" style="margin-top:12px"><div><div class="st-t">Enjoying ĀNANDA?</div><div class="st-s" style="margin-top:2px">Sign in free for unlimited searches &amp; your personal Rx document.</div></div><button class="st-btn" onclick="openM(\'auth-modal\')">Sign in free →</button></div>':'')
